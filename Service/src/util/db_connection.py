@@ -3,11 +3,12 @@ import os
 import simplejson as json
 
 CONFIG_FILE_PATH = 'Service/db/config.json'
+ROOT_FOLDER_NAME = 'stockdog-api/'
 
 def getConfigFilePath():
    cwd = os.getcwd()
-   strIdx = cwd.find('StockDog/')
-   return cwd[:strIdx + 9] + CONFIG_FILE_PATH
+   strIdx = cwd.find(ROOT_FOLDER_NAME)
+   return cwd[:strIdx + len(ROOT_FOLDER_NAME)] + CONFIG_FILE_PATH
 
 
 def getDBConn(envType='local'):

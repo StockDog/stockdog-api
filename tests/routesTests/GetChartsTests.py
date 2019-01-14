@@ -41,7 +41,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_recent(self):
-      url = self.url + '?ticker=AMD&length=recent'
+      url = self.url + '/AMD?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -51,7 +51,7 @@ class GetChartsTests(TestConfiguration):
 
    def test_getCharts_missingContentTypeHeader(self):
       self.headers.pop('content-type')
-      url = self.url + '?ticker=AMD&length=recent'
+      url = self.url + '/AMD?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
 
@@ -62,7 +62,7 @@ class GetChartsTests(TestConfiguration):
 
    def test_getCharts_invalidContentTypeHeader(self):
       self.headers['content-type'] = 'plain/text'
-      url = self.url + '?ticker=AMD&length=recent'
+      url = self.url + '/AMD?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
 
@@ -76,7 +76,7 @@ class GetChartsTests(TestConfiguration):
       logoutResponse = requests.delete(url=logoutUrl, headers=self.headers)     
       self.assertEqual(logoutResponse.status_code, 200)
 
-      url = self.url + '?ticker=AMD&length=recent'
+      url = self.url + '/AMD?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -88,7 +88,7 @@ class GetChartsTests(TestConfiguration):
    def test_getCharts_wrongAuthHeader(self):
       self.headers['Authorization'] = 'notToken ' + self.token
 
-      url = self.url + '?ticker=AMD&length=recent'
+      url = self.url + '/AMD?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -100,7 +100,7 @@ class GetChartsTests(TestConfiguration):
    def test_getCharts_missingToken(self):
       self.headers['Authorization'] = 'token '
 
-      url = self.url + '?ticker=AMD&length=recent'
+      url = self.url + '/AMD?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -112,7 +112,7 @@ class GetChartsTests(TestConfiguration):
    def test_getCharts_wrongToken(self):
       self.headers['Authorization'] = 'Token ' + 'some1131nonsensetoken'
 
-      url = self.url + '?ticker=AMD&length=recent'
+      url = self.url + '/AMD?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -122,7 +122,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_day(self):
-      url = self.url + '?ticker=MSFT&length=day'
+      url = self.url + '/MSFT?length=day'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -131,7 +131,7 @@ class GetChartsTests(TestConfiguration):
    
 
    def test_getCharts_week(self):
-      url = self.url + '?ticker=TSLA&length=week'
+      url = self.url + '/TSLA?length=week'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -140,7 +140,7 @@ class GetChartsTests(TestConfiguration):
       
 
    def test_getCharts_month(self):
-      url = self.url + '?ticker=AAPL&length=month'
+      url = self.url + '/AAPL?length=month'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -149,7 +149,7 @@ class GetChartsTests(TestConfiguration):
    
 
    def test_getCharts_year(self):
-      url = self.url + '?ticker=AMZN&length=year'
+      url = self.url + '/AMZN?length=year'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -162,13 +162,11 @@ class GetChartsTests(TestConfiguration):
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
-      self.assertEquals(response.status_code, 400)
-      self.assertTrue('MissingField' in responseData[0])
-      self.assertEquals(responseData[0]['MissingField'], 'ticker is a required field')
+      self.assertEquals(response.status_code, 404)
 
 
    def test_getCharts_noLength(self):
-      url = self.url + '?ticker=SNAP'
+      url = self.url + '/SNAP'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -182,16 +180,11 @@ class GetChartsTests(TestConfiguration):
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
-      self.assertEquals(response.status_code, 400)
-      self.assertEquals(len(responseData), 2)
-      self.assertTrue('MissingField' in responseData[0])
-      self.assertEquals(responseData[0]['MissingField'], 'ticker is a required field')
-      self.assertTrue('MissingField' in responseData[1])
-      self.assertEquals(responseData[1]['MissingField'], 'length is a required field')
+      self.assertEquals(response.status_code, 404)
 
 
    def test_getCharts_invalidLength(self):
-      url = self.url + '?ticker=SNAP&length=forever'
+      url = self.url + '/SNAP?length=forever'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -201,7 +194,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_invalidTicker(self):
-      url = self.url + '?ticker=YOLO&length=day'
+      url = self.url + '/YOLO?length=day'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
