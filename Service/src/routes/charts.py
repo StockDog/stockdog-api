@@ -22,11 +22,10 @@ charts_api = Blueprint('charts_api', __name__)
 URL_PREFIX = 'https://api.iextrading.com/1.0/stock/'
 
 
-@charts_api.route('/api/charts', methods=['GET'])
+@charts_api.route('/api/charts/<ticker>', methods=['GET'])
 @auth.login_required
 @validator.validate_params(charts_schema.fields)
-def extract_args():
-   ticker = request.args.get('ticker')
+def extract_args(ticker):
    length = request.args.get('length')
 
    return get_history(ticker, length)
