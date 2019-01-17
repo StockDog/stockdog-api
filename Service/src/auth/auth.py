@@ -7,11 +7,11 @@ from util.error_map import errors
 def login_required(f):
    @wraps(f)
    def decorator(*args, **kwargs):
-      try: 
+      try:
          validate_session()
       except Exception as e:
-         return make_response(jsonify(NotLoggedIn=errors['notLoggedIn']),401)
-      
+         return make_response(jsonify(NotLoggedIn=errors['notLoggedIn']), 401)
+
       return f(*args, **kwargs)
    return decorator
 

@@ -48,25 +48,44 @@ def get_portfolios():
       
    for portfolio in portfolios:
       attach_portfolioItems(portfolio)
-      attach_portfolio_netWorth(portfolio)
+      attach_portfolio_value(portfolio)
 
    return json.dumps(portfolios)
    
+
+@portfolio_api.route('/api/portfolios/<portfolioId>', methods=['GET'])
+@auth.login_required
+@validator.validate_headers
+def get_portfolio(portfolioId):
+   if not auth.portfolio_belongsTo_user(portfolioId):
+      return Response(status=403)
+
+   g.cursor.execute("SELECT id, buyPower, name, userId, leagueId FROM Portfolio " + 
+      "WHERE id = %s", portfolioId)
+
+   portfolio = g.cursor.fetchone()
+   if portfolio is None:
+      return Response(status=404)
+
+   attach_portfolioItems(portfolio)
+   attach_portfolio_value(portfolio)
+
+   return json.dumps(portfolio)
+
 
 def attach_portfolioItems(portfolio):
    items = []
    g.cursor.execute("SELECT id, shareCount, avgCost, ticker FROM PortfolioItem WHERE portfolioId = %s", portfolio['id'])
    items = g.cursor.fetchall()
-
    portfolio['items'] = items
 
 
-def attach_portfolio_netWorth(portfolio):
-   netWorth = float(portfolio['buyPower'])
+def attach_portfolio_value(portfolio):
+   value = float(portfolio['buyPower'])
    for item in portfolio['items']:
-         netWorth += float(charts.getSharePrice(item['ticker'])) * item['shareCount']
+         value += float(charts.getSharePrice(item['ticker'])) * item['shareCount']
    
-   portfolio['netWorth'] = netWorth
+   portfolio['value'] = value
 
 
 # @portfolio_api.route('/api/portfolio', methods=['POST'])

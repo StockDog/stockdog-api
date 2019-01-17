@@ -63,6 +63,12 @@ class GetPortfoliosTests(TestConfiguration):
       self.assertEquals(responseData[0]['name'], 'mynewportfolio')
       self.assertTrue('buyPower' in responseData[0])
       self.assertEquals(responseData[0]['buyPower'], 10000)
+      self.assertTrue('userId' in responseData[0])
+      self.assertEquals(responseData[0]['userId'], 1)
+      self.assertTrue('leagueId' in responseData[0])
+      self.assertEquals(responseData[0]['leagueId'], None)
+      self.assertTrue('value' in responseData[0])
+      self.assertEquals(responseData[0]['value'], 10000)
 
 
    def test_getPortfolios_notLoggedIn(self):
@@ -161,6 +167,16 @@ class GetPortfoliosTests(TestConfiguration):
       response = requests.get(url=self.url, headers=self.headers)
       responseData = self.getJson(response)
       
+      self.assertTrue('name' in responseData[0])
+      self.assertEquals(responseData[0]['name'], 'mynewportfolio')
+      self.assertTrue('buyPower' in responseData[0])
+      self.assertTrue(responseData[0]['buyPower'] > 0)
+      self.assertTrue('userId' in responseData[0])
+      self.assertEquals(responseData[0]['userId'], 1)
+      self.assertTrue('leagueId' in responseData[0])
+      self.assertEquals(responseData[0]['leagueId'], None)
+      self.assertTrue('value' in responseData[0])
+      self.assertTrue(responseData[0]['value'] > 10000)
       self.assertEquals(len(responseData[0]['items']), 1)
       self.assertTrue('ticker' in responseData[0]['items'][0])
       self.assertEquals(responseData[0]['items'][0]['ticker'], 'AMD')
