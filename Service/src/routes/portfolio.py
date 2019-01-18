@@ -13,7 +13,7 @@ portfolio_api = Blueprint('portfolio_api', __name__)
 
 DEFAULT_BUYPOWER = 10000
 
-@portfolio_api.route('/api/portfolios', methods=['POST'])
+@portfolio_api.route('/api/v1.0/portfolios', methods=['POST'])
 @auth.login_required
 @validator.validate_body(portfolio_post_schema.fields)
 def post_portfolio():
@@ -30,7 +30,7 @@ def post_portfolio():
    return jsonify(id=portfolioId, buyPower=buyPower)
 
 
-@portfolio_api.route('/api/portfolios', methods=['GET'])
+@portfolio_api.route('/api/v1.0/portfolios', methods=['GET'])
 @auth.login_required
 @validator.validate_params(portfolio_get_schema.fields)
 def get_portfolios():
@@ -53,7 +53,7 @@ def get_portfolios():
    return json.dumps(portfolios)
    
 
-@portfolio_api.route('/api/portfolios/<portfolioId>', methods=['GET'])
+@portfolio_api.route('/api/v1.0/portfolios/<portfolioId>', methods=['GET'])
 @auth.login_required
 @validator.validate_headers
 def get_portfolio(portfolioId):

@@ -11,7 +11,7 @@ from util.error_map import errors
 transaction_api = Blueprint('transaction_api', __name__)
 
 
-@transaction_api.route('/api/transactions', methods=['POST'])
+@transaction_api.route('/api/v1.0/transactions', methods=['POST'])
 @auth.login_required
 @validator.validate_body(transaction_schema.fields)
 def post_transaction():
