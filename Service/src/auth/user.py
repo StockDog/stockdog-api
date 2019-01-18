@@ -10,7 +10,7 @@ from util.error_map import errors
 
 user_api = Blueprint('user_api', __name__)
 
-@user_api.route('/api/users', methods=['POST'])
+@user_api.route('/api/v1.0/users', methods=['POST'])
 @validator.validate_body(user_schema.fields)
 def post_user():
    body = request.get_json()
@@ -28,7 +28,7 @@ def post_user():
    return jsonify(id=g.cursor.lastrowid)
 
 
-@user_api.route('/api/users/session', methods=['POST'])
+@user_api.route('/api/v1.0/users/session', methods=['POST'])
 @validator.validate_body(login_schema.fields)
 def login_user():
    body = request.get_json()
@@ -53,7 +53,7 @@ def login_user():
       return make_response(jsonify(NonexistentUser=errors['nonexistentUser']), 401)
 
 
-@user_api.route('/api/users/<userId>/session', methods=['DELETE'])
+@user_api.route('/api/v1.0/users/<userId>/session', methods=['DELETE'])
 @auth.login_required
 def logout_user(userId):
    if not auth.session_belongsTo_user(userId):

@@ -8,10 +8,10 @@ from Service.src.util.logger import Logger
 from Service.src.util.db_connection import getDBConn
 
 TRAVIS_ENV = 'travis'
-TRAVIS_URL = "http://0.0.0.0:5005/api"
+TRAVIS_URL = "http://0.0.0.0:5005/api/v1.0"
 
 LOCAL_ENV = 'local'
-LOCAL_URL = 'http://localhost:5005/api'
+LOCAL_URL = 'http://localhost:5005/api/v1.0'
 
 class TestConfiguration(TestCase):
 
@@ -19,14 +19,14 @@ class TestConfiguration(TestCase):
    def setUpClass(self):
       self.log = Logger(True, True, True)
       try:
-         self.db = getDBConn(LOCAL_ENV)
+         self.db = getDBConn(TRAVIS_ENV)
          self.cursor = self.db.cursor()
       except Exception as e:
          self.log.error(e)
          raise e
 
       self.headers = {'content-type' : 'application/json'}
-      self.baseUrl = LOCAL_URL
+      self.baseUrl = TRAVIS_URL
 
    
    def getJson(self, res):

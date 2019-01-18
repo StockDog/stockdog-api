@@ -22,7 +22,7 @@ charts_api = Blueprint('charts_api', __name__)
 URL_PREFIX = 'https://api.iextrading.com/1.0/stock/'
 
 
-@charts_api.route('/api/charts/<ticker>', methods=['GET'])
+@charts_api.route('/api/v1.0/charts/<ticker>', methods=['GET'])
 @auth.login_required
 @validator.validate_params(charts_schema.fields)
 def extract_args(ticker):
