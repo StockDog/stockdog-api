@@ -176,7 +176,7 @@ class GetPortfoliosTests(TestConfiguration):
       self.assertTrue('leagueId' in responseData[0])
       self.assertEquals(responseData[0]['leagueId'], None)
       self.assertTrue('value' in responseData[0])
-      self.assertTrue(responseData[0]['value'] > 10000)
+      self.assertTrue(responseData[0]['value'] > 0)
       self.assertEquals(len(responseData[0]['items']), 1)
       self.assertTrue('ticker' in responseData[0]['items'][0])
       self.assertEquals(responseData[0]['items'][0]['ticker'], 'AMD')

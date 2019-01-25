@@ -7,7 +7,6 @@ from util.error_map import errors
 
 def validate(data, fields):
    errors = []
-   
    check_headers(errors)
    if (len(errors) > 0):
       raise ValidationError(errors)

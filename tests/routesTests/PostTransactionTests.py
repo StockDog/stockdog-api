@@ -6,6 +6,8 @@ from TestConfiguration import TestConfiguration
 
 class PostTransactionTests(TestConfiguration):
    def setUp(self):
+      self.headers = {'content-type' : 'application/json'}
+
       registerUrl = self.baseUrl + '/users'
       registerBody = {
          'firstName' : 'Dave',
@@ -49,6 +51,40 @@ class PostTransactionTests(TestConfiguration):
 
       self.portfolioId = portfolioResponseData['id']
       self.url = self.baseUrl + '/transactions'
+
+
+   def test_post_transaction_missingContentTypeHeader(self):
+      self.headers.pop('content-type')
+      body = {
+         "shareCount" : 5,
+         "ticker" : "AMD",
+         "action" : "BUY",
+         "portfolioId" : self.portfolioId
+      }
+
+      response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
+      responseData = self.getJson(response)
+      
+      self.assertEquals(response.status_code, 400)
+      self.assertTrue('MissingHeader' in responseData[0])
+      self.assertEquals(responseData[0]['MissingHeader'], "Content-Type is a required header")
+
+
+   def test_post_transaction_invalidContentTypeHeader(self):
+      self.headers['content-type'] = 'plain/text'
+      body = {
+         "shareCount" : 5,
+         "ticker" : "AMD",
+         "action" : "BUY",
+         "portfolioId" : self.portfolioId
+      }
+
+      response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
+      responseData = self.getJson(response)
+      
+      self.assertEquals(response.status_code, 400)
+      self.assertTrue('InvalidHeader' in responseData[0])
+      self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of application/json")
 
 
    def test_post_transaction_buy(self):
