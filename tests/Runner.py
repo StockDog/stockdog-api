@@ -9,20 +9,22 @@ from routesTests.PostPortfolioTests import PostPortfolioTests
 from routesTests.PostTransactionTests import PostTransactionTests
 from routesTests.GetPortfoliosTests import GetPortfoliosTests
 from routesTests.GetPortfolioTests import GetPortfolioTests
+from routesTests.PostLeagueTests import PostLeagueTests
 
 
 if __name__ == '__main__':
    loader = TestLoader()
    suite = TestSuite(
       (
-         loader.loadTestsFromTestCase(PostUserTests),
-         loader.loadTestsFromTestCase(PostSessionTests),
-         loader.loadTestsFromTestCase(DeleteSessionTests),
-         loader.loadTestsFromTestCase(GetChartsTests),
-         loader.loadTestsFromTestCase(PostPortfolioTests),
-         loader.loadTestsFromTestCase(PostTransactionTests),
-         loader.loadTestsFromTestCase(GetPortfoliosTests),
-         loader.loadTestsFromTestCase(GetPortfolioTests)
+         # loader.loadTestsFromTestCase(PostUserTests),
+         # loader.loadTestsFromTestCase(PostSessionTests),
+         # loader.loadTestsFromTestCase(DeleteSessionTests),
+         # loader.loadTestsFromTestCase(GetChartsTests),
+         # loader.loadTestsFromTestCase(PostPortfolioTests),
+         # loader.loadTestsFromTestCase(PostTransactionTests),
+         # loader.loadTestsFromTestCase(GetPortfoliosTests),
+         # loader.loadTestsFromTestCase(GetPortfolioTests),
+         loader.loadTestsFromTestCase(PostLeagueTests)
       )
    )
    runner = TextTestRunner()
