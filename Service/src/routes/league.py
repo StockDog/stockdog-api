@@ -1,38 +1,43 @@
 from flask import Blueprint, request, Response, g, jsonify, make_response
 import simplejson as json
-import time
+from datetime import datetime
 
+from auth import auth
 import routes.portfolio as portfolio
+from request_validator import validator
+from request_validator.schemas import league_post_schema
 from util.utility import Utility
 from util.error_map import errors
 
 league_api = Blueprint('league_api', __name__)
 
 DATE_FORMAT = "%m-%d-%Y"
+DAYS_IN_YEAR = 365
 
-
-@league_api.route('/api/league', methods=['POST'])
+@league_api.route('/api/v1.0/leagues', methods=['POST'])
+@auth.login_required
+@validator.validate_body(league_post_schema.fields)
 def post_league():
    body = request.get_json()
-   try:
-      result = LeagueSchema().load(body)
-   except ValidationError as err:
-      return make_response(json.dumps(err.messages), 400)
+   startDate = datetime.strptime(body['start'], DATE_FORMAT)
+   endDate = datetime.strptime(body['end'], DATE_FORMAT)
+   if startDate > endDate:
+      return make_response(jsonify(EndBeforeStart=errors['endBeforeStart']), 400)
+   
+   leagueDuration = (endDate - startDate).days
+   print(str(leagueDuration))
+   if leagueDuration > DAYS_IN_YEAR:
+      return make_response(jsonify(LeagueDurationTooLong=errors['leagueDurationTooLong']), 400)
 
+   startPos = body.get('startPos') or 10000
    inviteCode = Utility.getInviteCode()
 
-   try:
-      start = time.strptime(body['start'], DATE_FORMAT)
-      end = time.strptime(body['end'], DATE_FORMAT)
-   except:
-      return make_response(jsonify(error=errors['invalidDate']), 400)
-
-   g.cursor.execute("INSERT INTO League(name, start, end, startPos, inviteCode, ownerId) " + 
+   g.cursor.execute("Insert INTO League(name, start, end, startPos, inviteCode, ownerId) " +
       "VALUES (%s, %s, %s, %s, %s, %s)",
-      [body['name'], start, end, body['startPos'], inviteCode, body['ownerId']])
+      [body['name'], startDate, endDate, startPos, inviteCode, g.user['id']])
 
-   return jsonify(inviteCode=inviteCode, id=g.cursor.lastrowid)
-
+   return jsonify(inviteCode=inviteCode, id=g.cursor.lastrowid, startPos=startPos)
+   
 
 @league_api.route('/api/league', methods=['GET'])
 def get_leagues():

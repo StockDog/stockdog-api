@@ -175,7 +175,7 @@ class PostLeagueTests(TestConfiguration):
 
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidField' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], 'start must be in MM-DD-YYYY format')
+      self.assertEquals(responseData[0]['InvalidField'], 'start date must be in MM-DD-YYYY format')
 
 
    def test_post_league_invalidEnd(self):
@@ -190,7 +190,7 @@ class PostLeagueTests(TestConfiguration):
 
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidField' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], 'end must be in MM-DD-YYYY format')
+      self.assertEquals(responseData[0]['InvalidField'], 'end date must be in MM-DD-YYYY format')
 
 
    def test_post_league_negativeStartPos(self):
@@ -205,7 +205,7 @@ class PostLeagueTests(TestConfiguration):
 
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidField' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], 'startPos must be a value between 0 and 10000000')
+      self.assertEquals(responseData[0]['InvalidField'], 'startPos must be an integer greater than 1 and less than 1000000')
 
      
    def test_post_league_highStartPos(self):
@@ -220,7 +220,7 @@ class PostLeagueTests(TestConfiguration):
 
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidField' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], 'startPos must be a value between 0 and 10000000')
+      self.assertEquals(responseData[0]['InvalidField'], 'startPos must be an integer greater than 1 and less than 1000000')
 
 
    def test_post_league_pastStartDate(self):
@@ -235,14 +235,14 @@ class PostLeagueTests(TestConfiguration):
 
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidField' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], "start date of the league can't be in the past")
+      self.assertEquals(responseData[0]['InvalidField'], "start date can't be in the past")
        
 
    def test_post_league_pastEndDate(self):
       body = {
          "name": 'myLeague',
-         "start": "08-24-2018",
-         "end": "04-30-2017",
+         "start": "08-24-2019",
+         "end": "04-30-2018",
          "startPos": 3000
       }
       response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
@@ -250,7 +250,7 @@ class PostLeagueTests(TestConfiguration):
 
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidField' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], "end date of the league can't be in the past")
+      self.assertEquals(responseData[0]['InvalidField'], "end date can't be in the past")
        
    def test_post_league_endBeforeStart(self):
       body = {
@@ -264,28 +264,28 @@ class PostLeagueTests(TestConfiguration):
       responseData = self.getJson(response)
 
       self.assertEquals(response.status_code, 400)
-      self.assertTrue('EndBeforeStart' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], "The end date of the league can't be before the start date")
+      self.assertTrue('EndBeforeStart' in responseData)
+      self.assertEquals(responseData['EndBeforeStart'], "The end date can not be before the start date")
 
    def test_post_league_tooLongDuration(self):
       body = {
          "name": "myLeague",
-         "start": "08-24-2018",
-         "end": "08-25-2019",
+         "start": "08-24-2019",
+         "end": "08-25-2020",
          "startPos": 3000
       }
       response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
       responseData = self.getJson(response)
 
       self.assertEquals(response.status_code, 400)
-      self.assertTrue('EndsBeforeStarts' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], 'Leagues can last a maximum of 1 year')
+      self.assertTrue('LeagueDurationTooLong' in responseData)
+      self.assertEquals(responseData['LeagueDurationTooLong'], 'Leagues can last a maximum of 1 year')
 
    def test_post_league(self):
       body = {
          "name": "myLeague",
-         "start": "08-24-2018",
-         "end": "10-24-2018",
+         "start": "08-24-2019",
+         "end": "10-24-2019",
          "startPos": 3000
       }
       response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
@@ -294,12 +294,16 @@ class PostLeagueTests(TestConfiguration):
       self.assertEquals(response.status_code, 200)
       self.assertTrue('id' in responseData)
       self.assertTrue(responseData['id'] > 0)
+      self.assertTrue('inviteCode' in responseData)
+      self.assertTrue(len(responseData['inviteCode']) > 0)
+      self.assertTrue('startPos' in responseData)
+      self.assertEqual(responseData['startPos'], 3000)
 
    def test_post_league_defaultStartPos(self):
       body = {
          "name": "myLeague",
-         "start": "08-24-2018",
-         "end": "10-24-2018"
+         "start": "08-24-2019",
+         "end": "10-24-2019"
       }
       response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
       responseData = self.getJson(response)
@@ -307,7 +311,10 @@ class PostLeagueTests(TestConfiguration):
       self.assertEquals(response.status_code, 200)
       self.assertTrue('id' in responseData)
       self.assertTrue(responseData['id'] > 0)
+      self.assertTrue('inviteCode' in responseData)
+      self.assertTrue(len(responseData['inviteCode']) > 0)
+      self.assertTrue('startPos' in responseData)
+      self.assertEqual(responseData['startPos'], 10000)
    
-
    def tearDown(self):
       self.deleteTables(['League', 'User'])
