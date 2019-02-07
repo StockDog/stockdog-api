@@ -13,6 +13,7 @@ league_api = Blueprint('league_api', __name__)
 
 DATE_FORMAT = "%m-%d-%Y"
 DAYS_IN_YEAR = 365
+DEFAULT_START_POS = 10000
 
 @league_api.route('/api/v1.0/leagues', methods=['POST'])
 @auth.login_required
@@ -29,7 +30,7 @@ def post_league():
    if leagueDuration > DAYS_IN_YEAR:
       return make_response(jsonify(LeagueDurationTooLong=errors['leagueDurationTooLong']), 400)
 
-   startPos = body.get('startPos') or 10000
+   startPos = body.get('startPos') or DEFAULT_START_POS
    inviteCode = Utility.getInviteCode()
 
    g.cursor.execute("Insert INTO League(name, start, end, startPos, inviteCode, ownerId) " +

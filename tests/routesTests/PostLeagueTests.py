@@ -175,7 +175,7 @@ class PostLeagueTests(TestConfiguration):
 
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidField' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], 'start date must be in MM-DD-YYYY format')
+      self.assertEquals(responseData[0]['InvalidField'], 'start date must be a valid day in MM-DD-YYYY format')
 
 
    def test_post_league_invalidEnd(self):
@@ -190,7 +190,22 @@ class PostLeagueTests(TestConfiguration):
 
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidField' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], 'end date must be in MM-DD-YYYY format')
+      self.assertEquals(responseData[0]['InvalidField'], 'end date must be a valid day in MM-DD-YYYY format')
+
+   
+   def test_post_league_invalidStartDay(self):
+      body = {
+         "name": 'myLeague',
+         "start": "08-35-2019",
+         "end": "09-12-2019",
+         "startPos": 3000
+      }
+      response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
+      responseData = self.getJson(response)
+
+      self.assertEquals(response.status_code, 400)
+      self.assertTrue('InvalidField' in responseData[0])
+      self.assertEquals(responseData[0]['InvalidField'], 'start date must be a valid day in MM-DD-YYYY format')
 
 
    def test_post_league_negativeStartPos(self):

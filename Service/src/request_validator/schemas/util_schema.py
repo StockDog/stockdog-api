@@ -83,7 +83,7 @@ def validateDate(dateStr, field, errors):
          })
    except ValueError:
       errors.append({
-         'InvalidField': field.name + ' date must be in MM-DD-YYYY format'
+         'InvalidField': field.name + ' date must be a valid day in MM-DD-YYYY format'
       })
    except:
       errors.append({
