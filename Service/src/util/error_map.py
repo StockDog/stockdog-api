@@ -4,7 +4,6 @@ import simplejson as json
 errors = {
    'unsupportedTicker': 'The stock ticker is either invalid or unsupported.',
    'iexUnavailable': 'Honestly, this probably means that iex is down lol.',
-   'invalidDate': 'Invalid date format. Please use MM-DD-YYYY.',
    'nonexistentLeague': 'League does not exist.',
    'inviteCodeMismatch': "Invite code does not match the league's invite code.",
    'missingInviteCode': 'Invite code was not provided to join league.',
@@ -17,5 +16,7 @@ errors = {
    'nonexistentUser': 'User does not exist.',
    'notLoggedIn': 'User must be logged in.',
    'passwordMismatch': 'Incorrect password for user.',
-   'alphaVantageDown': 'AlphaVantage failed to respond'
+   'alphaVantageDown': 'AlphaVantage failed to respond',
+   'endBeforeStart': 'The end date can not be before the start date',
+   'leagueDurationTooLong': 'Leagues can last a maximum of 1 year'
 }

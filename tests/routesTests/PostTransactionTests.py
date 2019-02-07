@@ -177,7 +177,7 @@ class PostTransactionTests(TestConfiguration):
       self.assertEquals(responseData[0]['MissingField'], 'shareCount is a required field')
 
 
-   def test_post_transaction_noTicker(self):
+   def test_post_transaction_missingTicker(self):
       body = {
          "shareCount": 5,
          "action" : "BUY",
@@ -192,7 +192,7 @@ class PostTransactionTests(TestConfiguration):
       self.assertEquals(responseData[0]['MissingField'], 'ticker is a required field')
 
    
-   def test_post_transaction_noAction(self):
+   def test_post_transaction_missingAction(self):
       body = {
          "shareCount" : 5,
          "ticker" : "AMD",
@@ -207,7 +207,7 @@ class PostTransactionTests(TestConfiguration):
       self.assertEquals(responseData[0]['MissingField'], 'action is a required field')
 
       
-   def test_post_transaction_noPortfolioId(self):
+   def test_post_transaction_missingPortfolioId(self):
       body = {
          "shareCount" : 5,
          "ticker" : "AMD",

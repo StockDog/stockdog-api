@@ -19,14 +19,14 @@ class TestConfiguration(TestCase):
    def setUpClass(self):
       self.log = Logger(True, True, True)
       try:
-         self.db = getDBConn(LOCAL_ENV)
+         self.db = getDBConn(TRAVIS_ENV)
          self.cursor = self.db.cursor()
       except Exception as e:
          self.log.error(e)
          raise e
 
       self.headers = {'content-type' : 'application/json'}
-      self.baseUrl = LOCAL_URL
+      self.baseUrl = TRAVIS_URL
 
    
    def getJson(self, res):

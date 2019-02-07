@@ -9,6 +9,7 @@ from routesTests.PostPortfolioTests import PostPortfolioTests
 from routesTests.PostTransactionTests import PostTransactionTests
 from routesTests.GetPortfoliosTests import GetPortfoliosTests
 from routesTests.GetPortfolioTests import GetPortfolioTests
+from routesTests.PostLeagueTests import PostLeagueTests
 
 
 if __name__ == '__main__':
@@ -22,7 +23,8 @@ if __name__ == '__main__':
          loader.loadTestsFromTestCase(PostPortfolioTests),
          loader.loadTestsFromTestCase(PostTransactionTests),
          loader.loadTestsFromTestCase(GetPortfoliosTests),
-         loader.loadTestsFromTestCase(GetPortfolioTests)
+         loader.loadTestsFromTestCase(GetPortfolioTests),
+         loader.loadTestsFromTestCase(PostLeagueTests)
       )
    )
    runner = TextTestRunner()

@@ -1,6 +1,8 @@
 import re
+from datetime import datetime
 from validate_email import validate_email
 
+DATE_FORMAT = "%m-%d-%Y"
 NAME_CHAR_LIMIT = 32
 MIN_BUY_POWER = 1
 MAX_BUY_POWER = 1000000
@@ -49,7 +51,7 @@ def validateLength(lengthStr, field, errors):
 def validateBuyPower(buyPower, field, errors):
    if type(buyPower) != int or buyPower < MIN_BUY_POWER or buyPower > MAX_BUY_POWER:
       errors.append({
-         'InvalidField' : field.name + ' must be an integer greater than 1 and less than 1000000'
+         'InvalidField': field.name + ' must be an integer greater than 1 and less than 1000000'
       })
 
    return errors
@@ -58,7 +60,7 @@ def validateBuyPower(buyPower, field, errors):
 def validatePosInt(integer, field, errors):
    if type(integer) != int or integer <= 0:
       errors.append({
-         'InvalidField' : field.name + ' must be a positive integer'
+         'InvalidField': field.name + ' must be a positive integer'
       })
 
    return errors
@@ -67,5 +69,23 @@ def validatePosInt(integer, field, errors):
 def validateAction(action, field, errors):
    if type(action) != str or action not in VALID_ACTION_TYPES:
       errors.append({
-         'InvalidField' : field.name + ' must be a valid action: ' + ", ".join(VALID_ACTION_TYPES)
+         'InvalidField': field.name + ' must be a valid action: ' + ", ".join(VALID_ACTION_TYPES)
+      })
+
+
+def validateDate(dateStr, field, errors):
+   try:
+      date = datetime.strptime(dateStr, DATE_FORMAT)
+      today = datetime.now()
+      if (date < today):
+         errors.append({
+            'InvalidField': field.name + " date can't be in the past"
+         })
+   except ValueError:
+      errors.append({
+         'InvalidField': field.name + ' date must be a valid day in MM-DD-YYYY format'
+      })
+   except:
+      errors.append({
+         'InvalidField': field.name + ' something went wrong...'
       })
