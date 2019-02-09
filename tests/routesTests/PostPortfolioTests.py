@@ -45,7 +45,7 @@ class PostPortfolioTests(TestConfiguration):
          "startPos": 3000
       }
       leagueResponse = requests.post(leagueUrl, data=json.dumps(leagueBody), headers=self.headers)
-      leagueResponseData = self.getJson(leagueResponse)      
+      leagueResponseData = self.getJson(leagueResponse)     
       self.assertEquals(leagueResponse.status_code, 200)
       self.assertIsNotNone(leagueResponseData['id'])
       self.assertIsNotNone(leagueResponseData['inviteCode'])

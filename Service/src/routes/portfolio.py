@@ -21,13 +21,22 @@ def post_portfolio():
    buyPower = body.get('buyPower') or DEFAULT_BUYPOWER
 
    if 'inviteCode' in body:
-      return Response(status=405)
+         g.cursor.execute("SELECT id, name, startPos FROM League WHERE inviteCode = %s", body['inviteCode'])
+         league = g.cursor.fetchone()
+
+         if league is None:
+            return make_response(jsonify(InviteCodeMismatch=errors['inviteCodeMismatch']), 400)
+
+         g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId, leagueId) VALUES (%s, %s, %s, %s)",
+            [body['name'], league['startPos'], g.user['id'], league['id']])
+         
+         return jsonify(id=g.cursor.lastrowid, buyPower=league['startPos'], leagueId=league['id'], leagueName=league['name'])
+
    else:
       g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId) VALUES (%s, %s, %s)",
          [body['name'], buyPower, g.user['id']])
-      portfolioId = g.cursor.lastrowid
-
-   return jsonify(id=portfolioId, buyPower=buyPower)
+      
+      return jsonify(id=g.cursor.lastrowid, buyPower=buyPower)
 
 
 @portfolio_api.route('/api/v1.0/portfolios', methods=['GET'])
