@@ -2,6 +2,6 @@ Flask==0.12.4
 requests==2.10.0
 Flask-Cors==3.0.3
 Flask-Login==0.4.1
-PyMySQL==0.7.1
+PyMySQL==0.9.3
 simplejson==3.13.2
 validate_email==1.3
