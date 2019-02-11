@@ -19,6 +19,8 @@ def post_transaction():
    if not auth.portfolio_belongsTo_user(body['portfolioId']):
       return Response(status=403)
 
+   # TODO: Check if user's league is active
+
    try:
       sharePrice = getSharePrice(body['ticker'])
    except TypeError:

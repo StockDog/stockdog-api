@@ -55,6 +55,7 @@ def login_user():
 
 @user_api.route('/api/v1.0/users/<userId>/session', methods=['DELETE'])
 @auth.login_required
+@validator.validate_headers
 def logout_user(userId):
    if not auth.session_belongsTo_user(userId):
       return Response(status=403)
