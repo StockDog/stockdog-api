@@ -26,7 +26,6 @@ def post_league():
       return make_response(jsonify(EndBeforeStart=errors['endBeforeStart']), 400)
    
    leagueDuration = (endDate - startDate).days
-   print(str(leagueDuration))
    if leagueDuration > DAYS_IN_YEAR:
       return make_response(jsonify(LeagueDurationTooLong=errors['leagueDurationTooLong']), 400)
 
