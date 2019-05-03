@@ -194,7 +194,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_invalidTicker(self):
-      url = self.url + '/YOLO?length=day'
+      url = self.url + '/FUCK?length=day'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    

@@ -241,7 +241,7 @@ class PostTransactionTests(TestConfiguration):
    def test_post_transaction_invalidTicker(self):
       body = {
          "shareCount" : 5,
-         "ticker" : "YOLO",
+         "ticker" : "FUCK",
          "action" : "BUY",
          "portfolioId" : self.portfolioId
       }
