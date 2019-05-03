@@ -3,6 +3,7 @@ from flask import Blueprint, request, Response, g, jsonify, make_response
 import simplejson as json
 
 from routes import charts
+from routes import stock
 from auth import auth
 from request_validator import validator
 from request_validator.schemas import portfolio_post_schema, portfolio_get_schema
@@ -86,6 +87,16 @@ def attach_portfolioItems(portfolio):
    items = []
    g.cursor.execute("SELECT id, shareCount, avgCost, ticker FROM PortfolioItem WHERE portfolioId = %s", portfolio['id'])
    items = g.cursor.fetchall()
+
+   for item in items:
+      item['price'] = charts.getSharePrice(item['ticker'])
+      item['companyName'] = stock.getStockInformation(item['ticker'])['companyName']
+
+      # Calculating gain.
+      currentTotal = float(item['price']) * float(item['shareCount'])
+      purchasedTotal = float(item['avgCost']) * float(item['shareCount'])
+      item['gain'] = currentTotal - purchasedTotal
+
    portfolio['items'] = items
 
 
