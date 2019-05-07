@@ -10,7 +10,7 @@ from routesTests.PostTransactionTests import PostTransactionTests
 from routesTests.GetPortfoliosTests import GetPortfoliosTests
 from routesTests.GetPortfolioTests import GetPortfolioTests
 from routesTests.PostLeagueTests import PostLeagueTests
-from routesTests.StockTests import StockTests
+from routesTests.GetStockTests import StockTests
 
 
 if __name__ == '__main__':
