@@ -37,11 +37,11 @@ class GetChartsTests(TestConfiguration):
       self.userId = loginResponseData['userId']
       self.token = loginResponseData['token']
       self.headers['Authorization'] = 'token ' + self.token
-      self.url = self.baseUrl + '/charts'
+      self.url = self.baseUrl + '/stock'
 
 
    def test_getCharts_recent(self):
-      url = self.url + '/AMD?length=recent'
+      url = self.url + '/AMD/chart?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -51,7 +51,7 @@ class GetChartsTests(TestConfiguration):
 
    def test_getCharts_missingContentTypeHeader(self):
       self.headers.pop('content-type')
-      url = self.url + '/AMD?length=recent'
+      url = self.url + '/AMD/chart?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
 
@@ -62,7 +62,7 @@ class GetChartsTests(TestConfiguration):
 
    def test_getCharts_invalidContentTypeHeader(self):
       self.headers['content-type'] = 'plain/text'
-      url = self.url + '/AMD?length=recent'
+      url = self.url + '/AMD/chart?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
 
@@ -76,7 +76,7 @@ class GetChartsTests(TestConfiguration):
       logoutResponse = requests.delete(url=logoutUrl, headers=self.headers)     
       self.assertEqual(logoutResponse.status_code, 200)
 
-      url = self.url + '/AMD?length=recent'
+      url = self.url + '/AMD/chart?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -88,7 +88,7 @@ class GetChartsTests(TestConfiguration):
    def test_getCharts_wrongAuthHeader(self):
       self.headers['Authorization'] = 'notToken ' + self.token
 
-      url = self.url + '/AMD?length=recent'
+      url = self.url + '/AMD/chart?length=recent/chart'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -100,7 +100,7 @@ class GetChartsTests(TestConfiguration):
    def test_getCharts_missingToken(self):
       self.headers['Authorization'] = 'token '
 
-      url = self.url + '/AMD?length=recent'
+      url = self.url + '/AMD/chart?length=recent/chart'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -112,7 +112,7 @@ class GetChartsTests(TestConfiguration):
    def test_getCharts_wrongToken(self):
       self.headers['Authorization'] = 'Token ' + 'some1131nonsensetoken'
 
-      url = self.url + '/AMD?length=recent'
+      url = self.url + '/AMD/chart?length=recent'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -122,7 +122,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_day(self):
-      url = self.url + '/MSFT?length=day'
+      url = self.url + '/MSFT/chart?length=day'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -131,7 +131,7 @@ class GetChartsTests(TestConfiguration):
    
 
    def test_getCharts_week(self):
-      url = self.url + '/TSLA?length=week'
+      url = self.url + '/TSLA/chart?length=week'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -140,7 +140,7 @@ class GetChartsTests(TestConfiguration):
       
 
    def test_getCharts_month(self):
-      url = self.url + '/AAPL?length=month'
+      url = self.url + '/AAPL/chart?length=month'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -149,7 +149,7 @@ class GetChartsTests(TestConfiguration):
    
 
    def test_getCharts_year(self):
-      url = self.url + '/AMZN?length=year'
+      url = self.url + '/AMZN/chart?length=year'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -158,7 +158,7 @@ class GetChartsTests(TestConfiguration):
       
 
    def test_getCharts_noTicker(self):
-      url = self.url + '?length=year'
+      url = self.url + '//chart?length=year'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -166,7 +166,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_noLength(self):
-      url = self.url + '/SNAP'
+      url = self.url + '/SNAP/chart'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -176,7 +176,7 @@ class GetChartsTests(TestConfiguration):
       
       
    def test_getCharts_noLengthAndTicker(self):
-      url = self.url + '?'
+      url = self.url + '?/chart'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -184,7 +184,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_invalidLength(self):
-      url = self.url + '/SNAP?length=forever'
+      url = self.url + '/SNAP/chart?length=forever'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
@@ -194,7 +194,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_invalidTicker(self):
-      url = self.url + '/FUCK?length=day'
+      url = self.url + '/FUCK/chart?length=day'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
    
