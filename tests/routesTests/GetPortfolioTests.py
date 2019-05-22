@@ -103,10 +103,16 @@ class GetPortfolioTests(TestConfiguration):
       self.assertEquals(len(responseData['items']), 1)
       self.assertTrue('ticker' in responseData['items'][0])
       self.assertEquals(responseData['items'][0]['ticker'], 'AMD')
+      self.assertTrue('companyName' in responseData['items'][0])
+      self.assertEquals(responseData['items'][0]['companyName'], 'Advanced Micro Devices Inc.')
       self.assertTrue('shareCount' in responseData['items'][0])
       self.assertEquals(responseData['items'][0]['shareCount'], 5)
       self.assertTrue('avgCost' in responseData['items'][0])
       self.assertTrue(responseData['items'][0]['avgCost'] > 0)
+      self.assertTrue('price' in responseData['items'][0])
+      self.assertTrue(responseData['items'][0]['price'] > 0)
+      self.assertTrue('gain' in responseData['items'][0])
+
 
 
    def test_getPortfolio_notLoggedIn(self):

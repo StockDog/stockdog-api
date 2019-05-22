@@ -180,10 +180,15 @@ class GetPortfoliosTests(TestConfiguration):
       self.assertEquals(len(responseData[0]['items']), 1)
       self.assertTrue('ticker' in responseData[0]['items'][0])
       self.assertEquals(responseData[0]['items'][0]['ticker'], 'AMD')
+      self.assertTrue('companyName' in responseData[0]['items'][0])
+      self.assertEquals(responseData[0]['items'][0]['companyName'], 'Advanced Micro Devices Inc.')
+      self.assertTrue('gain' in responseData[0]['items'][0])
       self.assertTrue('shareCount' in responseData[0]['items'][0])
       self.assertEquals(responseData[0]['items'][0]['shareCount'], 5)
       self.assertTrue('avgCost' in responseData[0]['items'][0])
       self.assertTrue(responseData[0]['items'][0]['avgCost'] > 0)
+      self.assertTrue('price' in responseData[0]['items'][0])
+      self.assertTrue(responseData[0]['items'][0]['price'] > 0)
 
 
    def tearDown(self):

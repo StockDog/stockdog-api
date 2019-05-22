@@ -17,12 +17,40 @@ IEX_DATETIME_FORMAT = '%Y%m%d %H:%M'
 IEX_DATE_FORMAT = '%Y-%m-%d'
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
-charts_api = Blueprint('charts_api', __name__)
+stock_api = Blueprint('stock_api', __name__)
 
-URL_PREFIX = 'https://api.iextrading.com/1.0/stock/'
+IEX_URL_PREFIX = 'https://api.iextrading.com/1.0/stock/'
 
+@stock_api.route('/api/v1.0/stock/<ticker>', methods=['GET'])
+@auth.login_required
+def getStock(ticker):
+	stockInformation = getStockInformation(ticker)
 
-@charts_api.route('/api/v1.0/charts/<ticker>', methods=['GET'])
+	if (stockInformation == None):
+		return make_response(jsonify(InvalidTicker=errors['unsupportedTicker']), 400)
+
+	return json.dumps(stockInformation)
+
+def getStockInformation(ticker):
+	requestUrl = IEX_URL_PREFIX + ticker + '/company'
+
+	g.log.info('IEX API hitting: ' + requestUrl)
+	startTime = time.time()
+	rawResponse = requests.get(requestUrl)
+	iexTime = time.time() - startTime
+
+	try:
+		response = rawResponse.json()
+	except:
+		return None
+
+	parseTime = time.time() - startTime
+	g.log.info('IEX time is: ' + str(iexTime))
+	g.log.info('Parsing data time is: ' + str(parseTime))
+
+	return response
+
+@stock_api.route('/api/v1.0/stock/<ticker>/charts', methods=['GET'])
 @auth.login_required
 @validator.validate_params(charts_schema.fields)
 def extract_args(ticker):
@@ -33,7 +61,7 @@ def extract_args(ticker):
 
 def get_history(ticker, length):
    interval = getInterval(length)
-   requestUrl = URL_PREFIX + ticker + '/chart/' + interval
+   requestUrl = IEX_URL_PREFIX + ticker + '/chart/' + interval
    
    g.log.info('IEX API hitting: ' + requestUrl)
    startTime = time.time()
