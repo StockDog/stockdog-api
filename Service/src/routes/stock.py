@@ -51,7 +51,7 @@ def getStockInformation(ticker):
 	return response
 
 @stock_api.route('/api/v1.0/stock/<ticker>/chart', methods=['GET'])
-@auth.login_required
+# @auth.login_required
 @validator.validate_params(charts_schema.fields)
 def extract_args(ticker):
    length = request.args.get('length')
@@ -61,7 +61,7 @@ def extract_args(ticker):
 
 def get_history(ticker, length):
    interval = getInterval(length)
-   requestUrl = IEX_URL_PREFIX + ticker + '/chart/' + interval
+   requestUrl = IEX_URL_PREFIX + ticker + '/chart/' + interval + '?token=pk_5ab485c89b3841b0994702a5fdfcf862'
    
    g.log.info('IEX API hitting: ' + requestUrl)
    startTime = time.time()
