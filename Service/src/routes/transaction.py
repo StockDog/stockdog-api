@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, make_response, request, Response, g
 import simplejson as json
 
 from auth import auth
-from .charts import getSharePrice
+from .stock import getSharePrice
 from request_validator import validator
 from request_validator.schemas import transaction_schema
 from util.utility import Utility

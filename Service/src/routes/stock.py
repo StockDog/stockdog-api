@@ -50,7 +50,7 @@ def getStockInformation(ticker):
 
 	return response
 
-@stock_api.route('/api/v1.0/stock/<ticker>/charts', methods=['GET'])
+@stock_api.route('/api/v1.0/stock/<ticker>/chart', methods=['GET'])
 @auth.login_required
 @validator.validate_params(charts_schema.fields)
 def extract_args(ticker):
