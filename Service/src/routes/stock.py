@@ -19,7 +19,7 @@ DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 stock_api = Blueprint('stock_api', __name__)
 
-IEX_URL_PREFIX = 'https://api.iextrading.com/1.0/stock/'
+IEX_URL_PREFIX = 'https://cloud.iexapis.com/v1/stock/'
 
 @stock_api.route('/api/v1.0/stock/<ticker>', methods=['GET'])
 @auth.login_required
