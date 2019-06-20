@@ -112,39 +112,25 @@ def getInterval(length):
 
 
 def formatData(jsonData, interval):
-   if interval == DAY:
-      return formatDataIntraday(jsonData)
-   elif interval == MONTH or interval == YEAR:
-      return formatDataInterDay(jsonData)
+	data = [] 
+	for item in jsonData:
 
-   
-def formatDataInterDay(jsonData):
-   data = []
-   for item in jsonData:
+		itemDateTime = formatDateTime(item, interval)
+		data.append({
+			'time' : itemDateTime.strftime(DATETIME_FORMAT),
+			'epochTime' : itemDateTime.timestamp(),
+			'price' : item['close']
+		})
 
-      itemTime = datetime.strptime(item['date'], IEX_DATE_FORMAT)
-      data.append({
-         'time' : itemTime.strftime(DATETIME_FORMAT),
-         'epochTime' : itemTime.timestamp(),
-         'price' : item['open']
-      })
+	data.sort(key=lambda item:item['epochTime'], reverse=False)
+	return data
 
-   data.sort(key=lambda item:item['epochTime'], reverse=False)
-   return data
+# Handles both intra and inter day data
+# Returns a string
+def formatDateTime(data, interval):
+	if (interval == DAY):
+		dateTime = datetime.strptime(data['date'] + ' ' + data['minute'], IEX_DATETIME_FORMAT)
+	else:
+		dateTime = datetime.strptime(data['date'], IEX_DATE_FORMAT)
 
-
-def formatDataIntraday(jsonData):
-   data = [] 
-   for item in jsonData:
-      if item['average'] < 0:
-         continue
-
-      itemTime = datetime.strptime(item['date'] + ' ' + item['minute'], IEX_DATETIME_FORMAT)
-      data.append({
-         'time' : itemTime.strftime(DATETIME_FORMAT),
-         'epochTime' : itemTime.timestamp(),
-         'price' : item['average']
-      })
-
-   data.sort(key=lambda item:item['epochTime'], reverse=False)
-   return data
+	return dateTime
