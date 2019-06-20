@@ -21,6 +21,17 @@ stock_api = Blueprint('stock_api', __name__)
 
 IEX_URL_PREFIX = 'https://cloud.iexapis.com/v1/stock/'
 
+CONFIG_FILE_PATH = './config.json'
+
+# This needs to be optimized so it doesn't open and close the config file every time.
+def getIexToken():
+	try:
+		configFile = open(CONFIG_FILE_PATH, 'r')
+		config = json.load(configFile)
+		configFile.close()
+		return config['iexToken']
+	except Exception as e:
+		raise Exception('Could not retrieve the iexToken') 
 @stock_api.route('/api/v1.0/stock/<ticker>', methods=['GET'])
 @auth.login_required
 def getStock(ticker):
