@@ -44,7 +44,7 @@ def getStock(ticker):
 	return json.dumps(stockInformation)
 
 def getStockInformation(ticker):
-	requestUrl = IEX_URL_PREFIX + ticker + '/company' + '?token=' + getIexToken()
+	requestUrl = f'{IEX_URL_PREFIX}{ticker}/company?token={getIexToken()}'
 
 	g.log.info('IEX API hitting: ' + requestUrl)
 	startTime = time.time()
@@ -78,7 +78,7 @@ def extract_args(ticker):
 
 def get_history(ticker, length):
 	interval = getInterval(length)
-	requestUrl = IEX_URL_PREFIX + ticker + '/chart/' + interval + '?token=' + getIexToken()
+	requestUrl = f'{IEX_URL_PREFIX}{ticker}/chart/{interval}?token={getIexToken()}'
 	
 	g.log.info('IEX API hitting: ' + requestUrl)
 	startTime = time.time()
