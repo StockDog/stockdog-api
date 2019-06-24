@@ -1,17 +1,10 @@
 import pymysql
 import os
-import simplejson as json
-
-CONFIG_FILE_PATH = './config.json'
+from .config import getConfig
 
 def getDBConn(envType='local'):
    if envType == 'local':
-      try:
-         configFile = open(CONFIG_FILE_PATH, 'r')
-         config = json.load(configFile)
-         configFile.close()
-      except Exception as e:
-         raise Exception('The db config filename was not provided or poorly formatted') 
+      config = getConfig()
 
       conn = pymysql.connect(host='127.0.0.1', user=config['db']['user'], password=config['db']['password'], 
          database=config['db']['database'], cursorclass=pymysql.cursors.DictCursor, autocommit=True)
