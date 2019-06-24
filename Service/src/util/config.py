@@ -3,14 +3,14 @@ import simplejson as json
 CONFIG_FILE_PATH = 'Service/src/config.json'
 ROOT_FOLDER_NAME = 'stockdog-api/'
 
-config = None
+__config = None
 
 def getConfig():
    # Variable is only global in the module
-   global config
-   if (config is None):
-      config = __importConfig()
-   return config
+   global __config
+   if (__config is None):
+      __config = __importConfig()
+   return __config
 
 def __importConfig():
    configFile = open(__getConfigFilePath(), 'r')
