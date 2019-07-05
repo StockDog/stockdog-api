@@ -1,8 +1,9 @@
 from flask import Blueprint, jsonify, make_response, request, Response, g
 import simplejson as json
+import requests
 
 from auth import auth
-from .charts import getSharePrice
+from .stock import getSharePrice, handleIexError
 from request_validator import validator
 from request_validator.schemas import transaction_schema
 from util.utility import Utility
@@ -23,6 +24,8 @@ def post_transaction():
 
    try:
       sharePrice = getSharePrice(body['ticker'])
+   except requests.HTTPError as e:
+      return handleIexError(e)
    except TypeError:
       return make_response(jsonify(UnsupportedTicker=errors['unsupportedTicker']), 400)
 

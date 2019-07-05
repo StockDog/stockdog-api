@@ -104,7 +104,7 @@ class GetPortfolioTests(TestConfiguration):
       self.assertTrue('ticker' in responseData['items'][0])
       self.assertEquals(responseData['items'][0]['ticker'], 'AMD')
       self.assertTrue('companyName' in responseData['items'][0])
-      self.assertEquals(responseData['items'][0]['companyName'], 'Advanced Micro Devices Inc.')
+      self.assertEquals(responseData['items'][0]['companyName'], 'Advanced Micro Devices, Inc.')
       self.assertTrue('shareCount' in responseData['items'][0])
       self.assertEquals(responseData['items'][0]['shareCount'], 5)
       self.assertTrue('avgCost' in responseData['items'][0])

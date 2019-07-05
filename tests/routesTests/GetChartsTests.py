@@ -199,8 +199,8 @@ class GetChartsTests(TestConfiguration):
       responseData = self.getJson(response)
    
       self.assertEquals(response.status_code, 400)
-      self.assertTrue('InvalidTicker' in responseData)
-      self.assertEquals(responseData['InvalidTicker'], "The stock ticker is either invalid or unsupported.")
+      self.assertTrue('UnsupportedTicker' in responseData)
+      self.assertEquals(responseData['UnsupportedTicker'], "The stock ticker is either invalid or unsupported.")
 
 
    def tearDown(self):

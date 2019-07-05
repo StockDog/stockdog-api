@@ -8,75 +8,84 @@ from auth import auth
 from request_validator import validator
 from request_validator.schemas import charts_schema
 from util.error_map import errors
+from util.config import getConfig
 
 DAY = '1d'
 MONTH = '1m'
 YEAR = '1y'
 
-IEX_DATETIME_FORMAT = '%Y%m%d %H:%M'
+IEX_DATETIME_FORMAT = '%Y-%m-%d %H:%M'
 IEX_DATE_FORMAT = '%Y-%m-%d'
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 stock_api = Blueprint('stock_api', __name__)
 
-IEX_URL_PREFIX = 'https://api.iextrading.com/1.0/stock/'
+IEX_URL_PREFIX = 'https://cloud.iexapis.com/v1/stock/'
+
+# This needs to be optimized so it doesn't open and close the config file every time.
+def getIexToken():
+   config = getConfig()
+   return config['iexToken']
 
 @stock_api.route('/api/v1.0/stock/<ticker>', methods=['GET'])
 @auth.login_required
 def getStock(ticker):
-	stockInformation = getStockInformation(ticker)
+   try:
+      stockInformation = getStockInformation(ticker)
+   except requests.HTTPError as e:
+      return handleIexError(e)
 
-	if (stockInformation == None):
-		return make_response(jsonify(InvalidTicker=errors['unsupportedTicker']), 400)
-
-	return json.dumps(stockInformation)
+   return json.dumps(stockInformation)
 
 def getStockInformation(ticker):
-	requestUrl = IEX_URL_PREFIX + ticker + '/company'
+   requestUrl = f'{IEX_URL_PREFIX}{ticker}/company?token={getIexToken()}'
 
-	g.log.info('IEX API hitting: ' + requestUrl)
-	startTime = time.time()
-	rawResponse = requests.get(requestUrl)
-	iexTime = time.time() - startTime
+   g.log.info('IEX API hitting: ' + requestUrl)
+   startTime = time.time()
+   rawResponse = requests.get(requestUrl)
+   iexTime = time.time() - startTime
 
-	try:
-		response = rawResponse.json()
-	except:
-		return None
+   if (rawResponse.status_code != 200):
+      rawResponse.raise_for_status()
 
-	parseTime = time.time() - startTime
-	g.log.info('IEX time is: ' + str(iexTime))
-	g.log.info('Parsing data time is: ' + str(parseTime))
+   response = rawResponse.json()
 
-	return response
+   parseTime = time.time() - startTime
+   g.log.info('IEX time is: ' + str(iexTime))
+   g.log.info('Parsing data time is: ' + str(parseTime))
 
-@stock_api.route('/api/v1.0/stock/<ticker>/charts', methods=['GET'])
+   return response
+
+@stock_api.route('/api/v1.0/stock/<ticker>/chart', methods=['GET'])
 @auth.login_required
 @validator.validate_params(charts_schema.fields)
 def extract_args(ticker):
    length = request.args.get('length')
 
-   return get_history(ticker, length)
+   try:
+      history = get_history(ticker, length)
+   except requests.HTTPError as e:
+      return handleIexError(e)
+
+   return json.dumps(history)
 
 
 def get_history(ticker, length):
    interval = getInterval(length)
-   requestUrl = IEX_URL_PREFIX + ticker + '/chart/' + interval
+   requestUrl = f'{IEX_URL_PREFIX}{ticker}/chart/{interval}?token={getIexToken()}'
    
    g.log.info('IEX API hitting: ' + requestUrl)
    startTime = time.time()
    rawResponse = requests.get(requestUrl)
    iexTime = time.time() - startTime
 
-   try:
-      response = rawResponse.json()
-   except:
-      return make_response(jsonify(InvalidTicker=errors['unsupportedTicker']), 400)
+   if (rawResponse.status_code != 200):
+      rawResponse.raise_for_status()
+
+   response = rawResponse.json()
 
    data = formatData(response, interval)
-   if len(data) == 0:
-      return make_response(jsonify(IEXUnavailable=errors['iexUnavailable']), 500)
-   
+
    if length == 'recent':
       data = [data[-1]]
    
@@ -84,11 +93,10 @@ def get_history(ticker, length):
    g.log.info('IEX time is: ' + str(iexTime))
    g.log.info('Parsing data time is: ' + str(parseTime))
 
-   return json.dumps(data)
-
+   return data
 
 def getSharePrice(ticker):
-   return json.loads(get_history(ticker, 'recent'))[0]['price']
+   return get_history(ticker, 'recent')[0]['price']
 
 
 def getInterval(length):
@@ -101,39 +109,34 @@ def getInterval(length):
 
 
 def formatData(jsonData, interval):
-   if interval == DAY:
-      return formatDataIntraday(jsonData)
-   elif interval == MONTH or interval == YEAR:
-      return formatDataInterDay(jsonData)
-
-   
-def formatDataInterDay(jsonData):
-   data = []
-   for item in jsonData:
-
-      itemTime = datetime.strptime(item['date'], IEX_DATE_FORMAT)
-      data.append({
-         'time' : itemTime.strftime(DATETIME_FORMAT),
-         'epochTime' : itemTime.timestamp(),
-         'price' : item['open']
-      })
-
-   data.sort(key=lambda item:item['epochTime'], reverse=False)
-   return data
-
-
-def formatDataIntraday(jsonData):
    data = [] 
    for item in jsonData:
-      if item['average'] < 0:
-         continue
 
-      itemTime = datetime.strptime(item['date'] + ' ' + item['minute'], IEX_DATETIME_FORMAT)
+      itemDateTime = formatDateTime(item, interval)
       data.append({
-         'time' : itemTime.strftime(DATETIME_FORMAT),
-         'epochTime' : itemTime.timestamp(),
-         'price' : item['average']
+         'time' : itemDateTime.strftime(DATETIME_FORMAT),
+         'epochTime' : itemDateTime.timestamp(),
+         'price' : item['close']
       })
 
    data.sort(key=lambda item:item['epochTime'], reverse=False)
    return data
+
+# Handles both intra and inter day data
+# Returns a string
+def formatDateTime(data, interval):
+   if (interval == DAY):
+      dateTime = datetime.strptime(data['date'] + ' ' + data['minute'], IEX_DATETIME_FORMAT)
+   else:
+      dateTime = datetime.strptime(data['date'], IEX_DATE_FORMAT)
+
+   return dateTime
+
+# Expects a requests.HTTPError object
+def handleIexError(error):
+   if error.response.status_code == 401:
+      return make_response(jsonify(InvalidIexToken=errors['invalidIexToken']), 401)
+   elif error.response.status_code == 404:
+      return make_response(jsonify(UnsupportedTicker=errors['unsupportedTicker']), 400)
+   else:
+      return make_response(jsonify(IexUnavailable=errors['iexUnavailable']), 503)

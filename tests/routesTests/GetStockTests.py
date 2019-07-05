@@ -42,13 +42,13 @@ class StockTests(TestConfiguration):
 		url = self.url + 'amd'
 		response = requests.get(url=url, headers=self.headers)
 		responseData = self.getJson(response)
-		self.assertEqual(responseData['companyName'], "Advanced Micro Devices Inc.");
+		self.assertEqual(responseData['companyName'], "Advanced Micro Devices, Inc.");
 
 	def test_getStock_nonExistent(self):
 		url = self.url + 'FUCK'
 		response = requests.get(url=url, headers=self.headers)
 		responseData = self.getJson(response)
-		self.assertEqual(responseData['InvalidTicker'], "The stock ticker is either invalid or unsupported.");
+		self.assertEqual(responseData['UnsupportedTicker'], "The stock ticker is either invalid or unsupported.");
 
 	def tearDown(self):
 		self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User'])

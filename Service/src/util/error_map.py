@@ -17,5 +17,6 @@ errors = {
    'passwordMismatch': 'Incorrect password for user.',
    'alphaVantageDown': 'AlphaVantage failed to respond',
    'endBeforeStart': 'The end date can not be before the start date',
-   'leagueDurationTooLong': 'Leagues can last a maximum of 1 year'
+   'leagueDurationTooLong': 'Leagues can last a maximum of 1 year',
+   'invalidIexToken': 'The IEX token is invalid'
 }

@@ -4,7 +4,6 @@ from flask_cors import CORS
 
 from auth.user import user_api
 
-from routes.charts import charts_api
 from routes.league import league_api
 from routes.nuke import nuke_api
 from routes.portfolio import portfolio_api
@@ -18,7 +17,6 @@ from util.logger import Logger
 app = Flask(__name__)
 CORS(app)
 
-app.register_blueprint(charts_api)
 app.register_blueprint(league_api)
 app.register_blueprint(nuke_api)
 app.register_blueprint(portfolio_api)
