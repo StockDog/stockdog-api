@@ -27,7 +27,7 @@ def getIexToken():
    config = getConfig()
    return config['iexToken']
 
-@stock_api.route('/api/v1.0/stock/<ticker>', methods=['GET'])
+@stock_api.route('/api/v1.0/stocks/<ticker>', methods=['GET'])
 @auth.login_required
 def getStock(ticker):
    try:
@@ -56,7 +56,7 @@ def getStockInformation(ticker):
 
    return response
 
-@stock_api.route('/api/v1.0/stock/<ticker>/chart', methods=['GET'])
+@stock_api.route('/api/v1.0/stocks/<ticker>/chart', methods=['GET'])
 @auth.login_required
 @validator.validate_params(charts_schema.fields)
 def extract_args(ticker):

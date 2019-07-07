@@ -36,7 +36,7 @@ class StockTests(TestConfiguration):
 		self.userId = loginResponseData['userId']
 		self.token = loginResponseData['token']
 		self.headers['Authorization'] = 'token ' + self.token
-		self.url = self.baseUrl + '/stock/'
+		self.url = self.baseUrl + '/stocks/'
 
 	def test_getStock_good(self):
 		url = self.url + 'amd'
