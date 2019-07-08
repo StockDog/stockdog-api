@@ -37,7 +37,7 @@ class GetChartsTests(TestConfiguration):
       self.userId = loginResponseData['userId']
       self.token = loginResponseData['token']
       self.headers['Authorization'] = 'token ' + self.token
-      self.url = self.baseUrl + '/stock'
+      self.url = self.baseUrl + '/stocks'
 
 
    def test_getCharts_recent(self):
