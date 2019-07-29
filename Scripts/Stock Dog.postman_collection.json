@@ -1,0 +1,909 @@
+{
+	"info": {
+		"_postman_id": "96181dc1-aa09-4fa0-aad9-7c7be6fec515",
+		"name": "Stock Dog",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Seed",
+			"item": [
+				{
+					"name": "nuke",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/nuke",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"nuke"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user ash",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstName\": \"Ash\",\n\t\"lastName\": \"Newman\",\n\t\"email\": \"ash@stockdog.com\",\n\t\"password\": \"Password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user sigal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstName\": \"Sigal\",\n\t\"lastName\": \"Shaul\",\n\t\"email\": \"sigal@stockdog.com\",\n\t\"password\": \"Password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user dom",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstName\": \"Dom\",\n\t\"lastName\": \"Bahar\",\n\t\"email\": \"dom@stockdog.com\",\n\t\"password\": \"Password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login ash",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2f98f85-ba9b-48d9-8893-531062dae1ac",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"userAshToken\", jsonData.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"ash@stockdog.com\",\n\t\"password\": \"Password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/session",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"session"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login sigal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2f98f85-ba9b-48d9-8893-531062dae1ac",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"userSigalToken\", jsonData.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"sigal@stockdog.com\",\n\t\"password\": \"Password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/session",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"session"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login dom",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2f98f85-ba9b-48d9-8893-531062dae1ac",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"userDomToken\", jsonData.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"dom@stockdog.com\",\n\t\"password\": \"Password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/session",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"session"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ash creates league weekly",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "30c0cc97-eedc-40a6-ad6f-61e00d3550aa",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"weeklyLeagueInviteCode\", jsonData.inviteCode);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "token {{userAshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"weekly\",\n\t\"startPos\": 10000,\n\t\"start\": \"01-01-2020\",\n\t\"end\": \"01-15-2020\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/leagues",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"leagues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create ash portfolio for weekly league",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8adc6391-54a8-4e9a-8b7a-db0e1fb0775a",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"ashWeeklyPortfolio\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "token {{userAshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"inviteCode\": \"{{weeklyLeagueInviteCode}}\",\n\t\"name\": \"ashmaster\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/portfolios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"portfolios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create sigal portfolio for weekly league",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "42750e2d-137f-42a5-a03d-be60026dccac",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"sigalWeeklyPortfolio\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userSigalToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"inviteCode\": \"{{weeklyLeagueInviteCode}}\",\n\t\"name\": \"siggy_wiggy\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/portfolios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"portfolios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create dom portfolio for weekly league",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cca9b45a-63e1-4869-aa72-b127c301403f",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"domWeeklyPortfolio\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userDomToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"inviteCode\": \"{{weeklyLeagueInviteCode}}\",\n\t\"name\": \"dominator\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/portfolios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"portfolios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ash buys amd for weekly",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "token {{userAshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"shareCount\": 5,\n\t\"ticker\": \"AMD\",\n\t\"action\": \"BUY\",\n\t\"portfolioId\": {{ashWeeklyPortfolio}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ash buys wmt for weekly",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "token {{userAshToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"shareCount\": 2,\n\t\"ticker\": \"WMT\",\n\t\"action\": \"BUY\",\n\t\"portfolioId\": {{ashWeeklyPortfolio}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ash buys aapl for weekly",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userAshToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"shareCount\": 2,\n\t\"ticker\": \"AAPL\",\n\t\"action\": \"BUY\",\n\t\"portfolioId\": {{ashWeeklyPortfolio}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sigal buys bac for weekly",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userSigalToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"shareCount\": 8,\n\t\"ticker\": \"BAC\",\n\t\"action\": \"BUY\",\n\t\"portfolioId\": {{sigalWeeklyPortfolio}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sigal buys tsla for weekly",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userSigalToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"shareCount\": 8,\n\t\"ticker\": \"TSLA\",\n\t\"action\": \"BUY\",\n\t\"portfolioId\": {{sigalWeeklyPortfolio}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dom buys lyft for weekly",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userDomToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"shareCount\": 8,\n\t\"ticker\": \"LYFT\",\n\t\"action\": \"BUY\",\n\t\"portfolioId\": {{domWeeklyPortfolio}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sigal creates league monthly",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "30c0cc97-eedc-40a6-ad6f-61e00d3550aa",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"monthlyLeagueInviteCode\", jsonData.inviteCode);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userSigalToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"monthly\",\n\t\"startPos\": 50000,\n\t\"start\": \"01-01-2020\",\n\t\"end\": \"01-15-2020\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/leagues",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"leagues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create ash portfolio for monthly league",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8adc6391-54a8-4e9a-8b7a-db0e1fb0775a",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"ashMonthlyPortfolio\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userAshToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"inviteCode\": \"{{monthlyLeagueInviteCode}}\",\n\t\"name\": \"asheeeee\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/portfolios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"portfolios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create sigal portfolio for monthly league",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "42750e2d-137f-42a5-a03d-be60026dccac",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"sigalMonthlyPortfolio\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userSigalToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"inviteCode\": \"{{monthlyLeagueInviteCode}}\",\n\t\"name\": \"sigster\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/portfolios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"portfolios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create dom portfolio for monthly league",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cca9b45a-63e1-4869-aa72-b127c301403f",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"domMonthlyPortfolio\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userDomToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"inviteCode\": \"{{monthlyLeagueInviteCode}}\",\n\t\"name\": \"dommywommy\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/portfolios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"portfolios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ash buys aapl for monthly",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userAshToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"shareCount\": 13,\n\t\"ticker\": \"AAPL\",\n\t\"action\": \"BUY\",\n\t\"portfolioId\": {{ashMonthlyPortfolio}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sigal buys bac for monthly",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userSigalToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"shareCount\": 20,\n\t\"ticker\": \"BAC\",\n\t\"action\": \"BUY\",\n\t\"portfolioId\": {{sigalMonthlyPortfolio}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sigal buys mj for monthly",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userSigalToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"shareCount\": 20,\n\t\"ticker\": \"MJ\",\n\t\"action\": \"BUY\",\n\t\"portfolioId\": {{sigalMonthlyPortfolio}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
