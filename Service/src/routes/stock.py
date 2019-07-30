@@ -96,8 +96,22 @@ def get_history(ticker, length):
    return data
 
 def getSharePrice(ticker):
-   return get_history(ticker, 'recent')[0]['price']
+   requestUrl = f'{IEX_URL_PREFIX}{ticker}/quote?token={getIexToken()}'
+   g.log.info('IEX API hitting: ' + requestUrl)
+   startTime = time.time()
+   rawResponse = requests.get(requestUrl)
+   iexTime = time.time() - startTime
 
+   if (rawResponse.status_code != 200):
+      rawResponse.raise_for_status()
+
+   response = rawResponse.json()
+
+   parseTime = time.time() - startTime
+   g.log.info('IEX time is: ' + str(iexTime))
+   g.log.info('Parsing data time is: ' + str(parseTime))
+
+   return response["latestPrice"]
 
 def getInterval(length):
    if length == 'recent' or length == 'day':
