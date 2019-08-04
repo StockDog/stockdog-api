@@ -65,7 +65,8 @@ class GetLeagueTests(TestConfiguration):
         self.assertEquals(portfolioResponse.status_code, 200)
 
     def test_get_league(self):
-        response = requests.get(url=self.leagueBaseUrl, headers=self.headers)
+        response = requests.get(url=f"{self.leagueBaseUrl}/1",
+            headers=self.headers)
         responseData = self.getJson(response)
 
         self.assertEquals(response.status_code, 200)
