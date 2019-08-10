@@ -3,7 +3,7 @@ import simplejson as json
 from datetime import datetime
 
 from auth import auth
-import routes.portfolio as portfolio
+import routes.portfolio as portfolioFuncs
 from request_validator import validator
 from request_validator.schemas import league_post_schema
 from util.utility import Utility
@@ -38,6 +38,32 @@ def post_league():
 
    return jsonify(inviteCode=inviteCode, id=g.cursor.lastrowid, startPos=startPos)
    
+@league_api.route('/api/v1.0/leagues/<leagueId>', methods=['GET'])
+@auth.login_required
+def get_league(leagueId):
+   g.cursor.execute("SELECT * FROM League WHERE id=%s", leagueId)
+   leagueInfo = g.cursor.fetchone()
+
+   # no league found
+   if not leagueInfo:
+      return make_response(jsonify(error='leagueNotFound', message=errors['leagueNotFound']), 404)
+
+   # get associated portfolios
+   g.cursor.execute("SELECT * FROM Portfolio WHERE leagueId=%s", leagueId)
+   portfolios = g.cursor.fetchall()
+
+   # attach portfolio value for each portfolio
+   for portfolio in portfolios:
+      portfolioFuncs.attach_portfolioItems(portfolio)
+      portfolioFuncs.attach_portfolio_value(portfolio)
+
+   return jsonify(
+      id=leagueInfo["id"],
+      startPos=leagueInfo["startPos"],
+      start=leagueInfo["start"],
+      end=leagueInfo["end"],
+      portfolios=portfolios
+   )
 
 @league_api.route('/api/league', methods=['GET'])
 def get_leagues():
@@ -50,17 +76,6 @@ def get_leagues():
 
    leagues = g.cursor.fetchall()
    return json.dumps(leagues, default=Utility.dateToStr)
-
-
-@league_api.route('/api/league/<leagueId>', methods=['GET'])
-def get_league(leagueId):
-   g.cursor.execute("SELECT * FROM League WHERE id = %s", leagueId)
-   leagueInfo = g.cursor.fetchone()
-
-   if leagueInfo:
-      return json.dumps(leagueInfo, default=Utility.dateToStr)
-   else:
-      return Response(status=404)
 
 
 @league_api.route('/api/league/<leagueId>/members', methods=['GET'])

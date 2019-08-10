@@ -70,15 +70,14 @@ class GetLeagueTests(TestConfiguration):
         responseData = self.getJson(response)
 
         self.assertEquals(response.status_code, 200)
-        self.assertEquals(responseData.id, 1)
-        self.assertEquals(responseData.startPos, 5000)
-        self.assertEquals(responseData.start, "01-15-2020")
-        self.assertEquals(responseData.end, "02-15-2020")
-        self.assertEquals(responseData.end, "02-15-2020")
-        self.assertEquals(len(responseData.portfolios), 1)
-        self.assertEquals(responseData.portfolios[0].id, 1)
-        self.assertEquals(responseData.portfolios[0].name, "david")
-        self.assertEquals(type(responseData.portfolios[0].value), int)
+        self.assertEquals(responseData["id"], 1)
+        self.assertEquals(responseData["startPos"], 5000)
+        self.assertEquals(responseData["start"], "Wed, 15 Jan 2020 00:00:00 GMT")
+        self.assertEquals(responseData["end"], "Sat, 15 Feb 2020 00:00:00 GMT")
+        self.assertEquals(len(responseData["portfolios"]), 1)
+        self.assertEquals(responseData["portfolios"][0]["id"], 1)
+        self.assertEquals(responseData["portfolios"][0]["name"], "david")
+        self.assertEquals(type(responseData["portfolios"][0]["value"]), float)
 
     def test_get_league_non_existant_id(self):
         response = requests.get(url=f"{self.leagueBaseUrl}/2",
@@ -88,4 +87,4 @@ class GetLeagueTests(TestConfiguration):
         self.assertEquals(response.status_code, 404)
 
     def tearDown(self):
-      self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User'])
+      self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League'])

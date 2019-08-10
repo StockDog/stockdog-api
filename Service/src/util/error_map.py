@@ -18,5 +18,6 @@ errors = {
    'alphaVantageDown': 'AlphaVantage failed to respond',
    'endBeforeStart': 'The end date can not be before the start date',
    'leagueDurationTooLong': 'Leagues can last a maximum of 1 year',
-   'invalidIexToken': 'The IEX token is invalid'
+   'invalidIexToken': 'The IEX token is invalid',
+   'leagueNotFound': 'Given league ID does not exists'
 }
