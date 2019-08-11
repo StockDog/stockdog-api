@@ -87,6 +87,3 @@ def get_league_members(leagueId):
    membersWithPortfolioValue = portfolio.add_portfolio_values(members)
 
    return json.dumps(membersWithPortfolioValue)
-        
-
-    
