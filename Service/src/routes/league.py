@@ -3,7 +3,7 @@ import simplejson as json
 from datetime import datetime
 
 from auth import auth
-import routes.portfolio as portfolioFuncs
+import routes.portfolio as portfolio_funcs
 from request_validator import validator
 from request_validator.schemas import league_post_schema
 from util.utility import Utility
@@ -15,75 +15,56 @@ DATE_FORMAT = "%m-%d-%Y"
 DAYS_IN_YEAR = 365
 DEFAULT_START_POS = 10000
 
+
 @league_api.route('/api/v1.0/leagues', methods=['POST'])
 @auth.login_required
 @validator.validate_body(league_post_schema.fields)
 def post_league():
-   body = request.get_json()
-   startDate = datetime.strptime(body['start'], DATE_FORMAT)
-   endDate = datetime.strptime(body['end'], DATE_FORMAT)
-   if startDate > endDate:
-      return make_response(jsonify(EndBeforeStart=errors['endBeforeStart']), 400)
-   
-   leagueDuration = (endDate - startDate).days
-   if leagueDuration > DAYS_IN_YEAR:
-      return make_response(jsonify(LeagueDurationTooLong=errors['leagueDurationTooLong']), 400)
+    body = request.get_json()
+    start_date = datetime.strptime(body['start'], DATE_FORMAT)
+    end_date = datetime.strptime(body['end'], DATE_FORMAT)
+    if start_date > end_date:
+        return make_response(jsonify(EndBeforeStart=errors['endBeforeStart']), 400)
 
-   startPos = body.get('startPos') or DEFAULT_START_POS
-   inviteCode = Utility.getInviteCode()
+    league_duration = (end_date - start_date).days
+    if league_duration > DAYS_IN_YEAR:
+        return make_response(jsonify(LeagueDurationTooLong=errors['leagueDurationTooLong']), 400)
 
-   g.cursor.execute("Insert INTO League(name, start, end, startPos, inviteCode, ownerId) " +
-      "VALUES (%s, %s, %s, %s, %s, %s)",
-      [body['name'], startDate, endDate, startPos, inviteCode, g.user['id']])
+    start_pos = body.get('startPos') or DEFAULT_START_POS
+    invite_code = Utility.getInviteCode()
 
-   return jsonify(inviteCode=inviteCode, id=g.cursor.lastrowid, startPos=startPos)
-   
-@league_api.route('/api/v1.0/leagues/<leagueId>', methods=['GET'])
+    g.cursor.execute("Insert INTO League(name, start, end, startPos, inviteCode, ownerId) " +
+                     "VALUES (%s, %s, %s, %s, %s, %s)",
+                     [body['name'], start_date, end_date, start_pos, invite_code, g.user['id']])
+
+    return jsonify(inviteCode=invite_code, id=g.cursor.lastrowid, startPos=start_pos)
+
+
+@league_api.route('/api/v1.0/leagues/<league_id>', methods=['GET'])
 @auth.login_required
-def get_league(leagueId):
-   g.cursor.execute("SELECT * FROM League WHERE id=%s", leagueId)
-   leagueInfo = g.cursor.fetchone()
+def get_league(league_id):
+    g.cursor.execute("SELECT * FROM League WHERE id=%s", league_id)
+    league_info = g.cursor.fetchone()
 
-   # no league found
-   if not leagueInfo:
-      return make_response(jsonify(error='leagueNotFound', message=errors['leagueNotFound']), 404)
+    # no league found
+    if not league_info:
+        return make_response(jsonify(error='leagueNotFound', message=errors['leagueNotFound']), 404)
 
-   # get associated portfolios
-   g.cursor.execute("SELECT * FROM Portfolio WHERE leagueId=%s", leagueId)
-   portfolios = g.cursor.fetchall()
+    # get associated portfolios
+    g.cursor.execute("SELECT * FROM Portfolio WHERE leagueId=%s", league_id)
+    portfolios = g.cursor.fetchall()
 
-   # attach portfolio value for each portfolio
-   for portfolio in portfolios:
-      portfolioFuncs.attach_portfolioItems(portfolio)
-      portfolioFuncs.attach_portfolio_value(portfolio)
+    # attach portfolio value for each portfolio
+    for portfolio in portfolios:
+        portfolio_funcs.attach_portfolioItems(portfolio)
+        portfolio_funcs.attach_portfolio_value(portfolio)
 
-   return jsonify(
-      id=leagueInfo["id"],
-      startPos=leagueInfo["startPos"],
-      start=leagueInfo["start"],
-      end=leagueInfo["end"],
-      portfolios=portfolios
-   )
+    return jsonify(
+        id=league_info["id"],
+        name=league_info["name"],
+        startPos=league_info["startPos"],
+        start=league_info["start"],
+        end=league_info["end"],
+        portfolios=portfolios
+    )
 
-@league_api.route('/api/league', methods=['GET'])
-def get_leagues():
-   inviteCode = request.args.get('inviteCode')
-
-   if inviteCode:
-      g.cursor.execute("SELECT * FROM League WHERE inviteCode = %s", inviteCode)
-   else:
-      g.cursor.execute("SELECT * FROM League")
-
-   leagues = g.cursor.fetchall()
-   return json.dumps(leagues, default=Utility.dateToStr)
-
-
-@league_api.route('/api/league/<leagueId>/members', methods=['GET'])
-def get_league_members(leagueId):
-   g.cursor.execute("SELECT p.name, p.id FROM Portfolio AS p JOIN League l ON p.leagueId = l.id " +
-      "WHERE l.id = %s", leagueId)
-
-   members = g.cursor.fetchall()
-   membersWithPortfolioValue = portfolio.add_portfolio_values(members)
-
-   return json.dumps(membersWithPortfolioValue)

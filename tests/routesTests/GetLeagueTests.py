@@ -71,6 +71,7 @@ class GetLeagueTests(TestConfiguration):
 
         self.assertEquals(response.status_code, 200)
         self.assertEquals(responseData["id"], 1)
+        self.assertEquals(responseData["name"], "test-league")
         self.assertEquals(responseData["startPos"], 5000)
         self.assertEquals(responseData["start"], "Wed, 15 Jan 2020 00:00:00 GMT")
         self.assertEquals(responseData["end"], "Sat, 15 Feb 2020 00:00:00 GMT")
