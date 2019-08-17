@@ -4,6 +4,8 @@ from unittest import main
 
 from TestConfiguration import TestConfiguration
 
+from tests.test_helper_functions import create_league
+
 
 class GetPortfolioTests(TestConfiguration):
     def setUp(self):
@@ -37,9 +39,12 @@ class GetPortfolioTests(TestConfiguration):
         self.token = loginResponseData['token']
         self.headers['Authorization'] = 'token ' + self.token
 
+        league_data = create_league(self.baseUrl, self.headers)
+
         portfolioUrl = self.baseUrl + '/portfolios'
         portfolioBody = {
             'name': 'mynewportfolio',
+            'inviteCode': league_data["inviteCode"]
         }
         portfolioResponse = requests.post(url=portfolioUrl, data=json.dumps(portfolioBody), headers=self.headers)
         portfolioResponseData = self.getJson(portfolioResponse)
@@ -47,7 +52,7 @@ class GetPortfolioTests(TestConfiguration):
         self.assertTrue('id' in portfolioResponseData)
         self.assertTrue(portfolioResponseData['id'] > 0)
         self.assertTrue('buyPower' in portfolioResponseData)
-        self.assertEquals(portfolioResponseData['buyPower'], 10000)
+        self.assertEquals(portfolioResponseData['buyPower'], 5000)
 
         self.portfolioId = int(portfolioResponseData['id'])
         self.url = self.baseUrl + '/portfolios'
@@ -61,15 +66,18 @@ class GetPortfolioTests(TestConfiguration):
         self.assertTrue('name' in responseData)
         self.assertTrue(responseData['name'], 'mynewportfolio')
         self.assertTrue('buyPower' in responseData)
-        self.assertEquals(responseData['buyPower'], 10000)
+        self.assertEquals(responseData['buyPower'], 5000)
         self.assertTrue('userId' in responseData)
         self.assertEquals(responseData['userId'], 1)
-        self.assertTrue('leagueId' in responseData)
-        self.assertEquals(responseData['leagueId'], None)
         self.assertTrue('value' in responseData)
-        self.assertEquals(responseData['value'], 10000)
+        self.assertEquals(responseData['value'], 5000)
         self.assertTrue('items' in responseData)
         self.assertEquals(len(responseData['items']), 0)
+        self.assertEquals(responseData['league']['id'], 1)
+        self.assertEquals(responseData['league']['name'], 'test-league')
+        self.assertEquals(responseData['league']['startPos'], 5000)
+        self.assertTrue('start' in responseData['league'])
+        self.assertTrue('end' in responseData['league'])
 
     def test_getPortfolio_havingPortfolioItems(self):
         buyBody = {
@@ -93,8 +101,6 @@ class GetPortfolioTests(TestConfiguration):
         self.assertTrue(responseData['buyPower'], 0)
         self.assertTrue('userId' in responseData)
         self.assertEquals(responseData['userId'], 1)
-        self.assertTrue('leagueId' in responseData)
-        self.assertEquals(responseData['leagueId'], None)
         self.assertTrue('value' in responseData)
         self.assertTrue(responseData['value'] > 0)
         self.assertTrue('items' in responseData)
@@ -110,6 +116,11 @@ class GetPortfolioTests(TestConfiguration):
         self.assertTrue('price' in responseData['items'][0])
         self.assertTrue(responseData['items'][0]['price'] > 0)
         self.assertTrue('gain' in responseData['items'][0])
+        self.assertEquals(responseData['league']['id'], 1)
+        self.assertEquals(responseData['league']['name'], 'test-league')
+        self.assertEquals(responseData['league']['startPos'], 5000)
+        self.assertTrue('start' in responseData['league'])
+        self.assertTrue('end' in responseData['league'])
 
     def test_getPortfolio_notLoggedIn(self):
         logoutUrl = self.baseUrl + '/users/' + str(self.userId) + '/session'

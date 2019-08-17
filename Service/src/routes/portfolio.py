@@ -13,101 +13,116 @@ portfolio_api = Blueprint('portfolio_api', __name__)
 
 DEFAULT_BUYPOWER = 10000
 
+
 @portfolio_api.route('/api/v1.0/portfolios', methods=['POST'])
 @auth.login_required
 @validator.validate_body(portfolio_post_schema.fields)
 def post_portfolio():
-   body = request.get_json()
-   buyPower = body.get('buyPower') or DEFAULT_BUYPOWER
+    body = request.get_json()
+    buyPower = body.get('buyPower') or DEFAULT_BUYPOWER
 
-   if 'inviteCode' in body:
-         g.cursor.execute("SELECT id, name, startPos FROM League WHERE inviteCode = %s", body['inviteCode'])
-         league = g.cursor.fetchone()
+    if 'inviteCode' in body:
+        g.cursor.execute("SELECT id, name, startPos FROM League WHERE inviteCode = %s", body['inviteCode'])
+        league = g.cursor.fetchone()
 
-         if league is None:
+        if league is None:
             return make_response(jsonify(InviteCodeMismatch=errors['inviteCodeMismatch']), 400)
 
-         g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId, leagueId) VALUES (%s, %s, %s, %s)",
-            [body['name'], league['startPos'], g.user['id'], league['id']])
-         
-         return jsonify(id=g.cursor.lastrowid, buyPower=league['startPos'], leagueId=league['id'], leagueName=league['name'])
+        g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId, leagueId) VALUES (%s, %s, %s, %s)",
+                         [body['name'], league['startPos'], g.user['id'], league['id']])
 
-   else:
-      g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId) VALUES (%s, %s, %s)",
-         [body['name'], buyPower, g.user['id']])
-      
-      return jsonify(id=g.cursor.lastrowid, buyPower=buyPower)
+        return jsonify(id=g.cursor.lastrowid, buyPower=league['startPos'], leagueId=league['id'],
+                       leagueName=league['name'])
+
+    else:
+        g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId) VALUES (%s, %s, %s)",
+                         [body['name'], buyPower, g.user['id']])
+
+        return jsonify(id=g.cursor.lastrowid, buyPower=buyPower)
 
 
 @portfolio_api.route('/api/v1.0/portfolios', methods=['GET'])
 @auth.login_required
 @validator.validate_params(portfolio_get_schema.fields)
 def get_portfolios():
-   leagueId = request.args.get('leagueId')
-   if leagueId:
-      # validate that user belongs to the league
-      # fetch all portfolios that belong to league
-      return Response(status=405)
-   
-   else:
-      g.cursor.execute("SELECT id, buyPower, name, userId, leagueId FROM Portfolio " + 
-         "WHERE userId = %s", g.user['id'])
+    g.cursor.execute("SELECT id, buyPower, name, userId, leagueId FROM Portfolio " +
+                     "WHERE userId = %s", g.user['id'])
 
-      portfolios = g.cursor.fetchall()
-      
-   for portfolio in portfolios:
-      attach_portfolioItems(portfolio)
-      attach_portfolio_value(portfolio)
+    portfolios = g.cursor.fetchall()
 
-   return json.dumps(portfolios)
-   
+    for portfolio in portfolios:
+        attach_portfolioItems(portfolio)
+        attach_portfolio_value(portfolio)
+        attach_league(portfolio)
+
+    return json.dumps(portfolios)
+
 
 @portfolio_api.route('/api/v1.0/portfolios/<portfolioId>', methods=['GET'])
 @auth.login_required
 @validator.validate_headers
 def get_portfolio(portfolioId):
-   if not auth.portfolio_belongsTo_user(portfolioId):
-      return Response(status=403)
+    if not auth.portfolio_belongsTo_user(portfolioId):
+        return Response(status=403)
 
-   g.cursor.execute("SELECT id, buyPower, name, userId, leagueId FROM Portfolio " + 
-      "WHERE id = %s", portfolioId)
+    g.cursor.execute("SELECT id, buyPower, name, userId, leagueId FROM Portfolio " +
+                     "WHERE id = %s", portfolioId)
 
-   portfolio = g.cursor.fetchone()
-   if portfolio is None:
-      return Response(status=404)
+    portfolio = g.cursor.fetchone()
+    if portfolio is None:
+        return Response(status=404)
 
-   attach_portfolioItems(portfolio)
-   attach_portfolio_value(portfolio)
+    attach_portfolioItems(portfolio)
+    attach_portfolio_value(portfolio)
+    attach_league(portfolio)
 
-   return json.dumps(portfolio)
+
+    return json.dumps(portfolio)
 
 
 def attach_portfolioItems(portfolio):
-   items = []
-   g.cursor.execute("SELECT id, shareCount, avgCost, ticker FROM PortfolioItem WHERE portfolioId = %s", portfolio['id'])
-   items = g.cursor.fetchall()
+    items = []
+    g.cursor.execute("SELECT id, shareCount, avgCost, ticker FROM PortfolioItem WHERE portfolioId = %s",
+                     portfolio['id'])
+    items = g.cursor.fetchall()
 
-   for item in items:
-      item['price'] = stock.getSharePrice(item['ticker'])
-      item['companyName'] = stock.getStockInformation(item['ticker'])['companyName']
+    for item in items:
+        item['price'] = stock.getSharePrice(item['ticker'])
+        item['companyName'] = stock.getStockInformation(item['ticker'])['companyName']
 
-      # Calculating gain.
-      currentTotal = float(item['price']) * float(item['shareCount'])
-      purchasedTotal = float(item['avgCost']) * float(item['shareCount'])
-      item['gain'] = currentTotal - purchasedTotal
+        # Calculating gain.
+        currentTotal = float(item['price']) * float(item['shareCount'])
+        purchasedTotal = float(item['avgCost']) * float(item['shareCount'])
+        item['gain'] = currentTotal - purchasedTotal
 
-   portfolio['items'] = items
+    portfolio['items'] = items
 
 
 def attach_portfolio_value(portfolio):
-   value = float(portfolio['buyPower'])
-   for item in portfolio['items']:
-         value += float(stock.getSharePrice(item['ticker'])) * item['shareCount']
-   
-   portfolio['value'] = value
+    value = float(portfolio['buyPower'])
+    for item in portfolio['items']:
+        value += float(stock.getSharePrice(item['ticker'])) * item['shareCount']
+
+    portfolio['value'] = value
 
 
-# @portfolio_api.route('/api/portfolio', methods=['GET'])
+def attach_league(portfolio):
+    g.cursor.execute("SELECT id, name, startPos, start, end FROM League WHERE id=%s", portfolio['leagueId'])
+    league_info = g.cursor.fetchone()
+
+    # no league found
+    if not league_info:
+        portfolio['league'] = 'null'
+    else:
+        portfolio['league'] = league_info
+
+    del portfolio['leagueId']
+
+    # Stringify dates
+    portfolio['league']['start'] = portfolio['league']['start'].strftime('%m-%d-%Y')
+    portfolio['league']['end'] = portfolio['league']['end'].strftime('%m-%d-%Y')
+
+# @pVortfolio_api.route('/api/portfolio', methods=['GET'])
 # def get_portfolios():
 #    userId = request.args.get('userId')
 #    leagueId = request.args.get('leagueId')
@@ -189,7 +204,7 @@ def attach_portfolio_value(portfolio):
 #       result = PortfolioHistorySchema().load(body)
 #    except ValidationError as err:
 #       return make_response(json.dumps(err.messages), 400)
-   
+
 #    now = datetime.now()
 
 #    g.cursor.execute("INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES (%s, %s, %s)",
