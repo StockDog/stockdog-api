@@ -4,6 +4,9 @@ from unittest import main
 
 from TestConfiguration import TestConfiguration
 
+from tests.test_helper_functions import create_league
+
+
 class GetLeagueTests(TestConfiguration):
     def setUp(self):
         self.headers = {'content-type': 'application/json'}
@@ -41,17 +44,7 @@ class GetLeagueTests(TestConfiguration):
         self.headers['Authorization'] = 'token ' + self.token
 
         # creating league
-        self.leagueBaseUrl = self.baseUrl + '/leagues'
-        postLeagueBody = {
-            "name": 'test-league',
-            "startPos": 5000,
-            "start": '01-15-2020',
-            "end": '02-15-2020'
-        }
-        leagueResponse = requests.post(url=self.leagueBaseUrl, 
-          data=json.dumps(postLeagueBody), headers=self.headers)
-        leagueResponseData = self.getJson(leagueResponse)
-        self.assertEquals(leagueResponse.status_code, 200)
+        leagueResponseData = create_league(self.baseUrl, self.headers)
 
         # creating portfolio using the league's invite code
         portfolioUrl = self.baseUrl + '/portfolios'
@@ -65,7 +58,7 @@ class GetLeagueTests(TestConfiguration):
         self.assertEquals(portfolioResponse.status_code, 200)
 
     def test_get_league(self):
-        response = requests.get(url=f"{self.leagueBaseUrl}/1",
+        response = requests.get(url=f"{self.baseUrl}/leagues/1",
             headers=self.headers)
         responseData = self.getJson(response)
 
@@ -81,7 +74,7 @@ class GetLeagueTests(TestConfiguration):
         self.assertEquals(type(responseData["portfolios"][0]["value"]), float)
 
     def test_get_league_non_existant_id(self):
-        response = requests.get(url=f"{self.leagueBaseUrl}/2",
+        response = requests.get(url=f"{self.baseUrl}/leagues/2",
             headers=self.headers)
         responseData = self.getJson(response)
 
