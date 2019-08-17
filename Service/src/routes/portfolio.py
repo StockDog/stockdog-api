@@ -112,7 +112,7 @@ def attach_league(portfolio):
 
     # no league found
     if not league_info:
-        portfolio['league'] = 'null'
+        portfolio['league'] = None
     else:
         portfolio['league'] = league_info
 
