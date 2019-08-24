@@ -8,7 +8,7 @@ class PostUserTests(TestConfiguration):
 
    def setUp(self):
       self.headers = {'content-type' : 'application/json'}
-      self.url = self.baseUrl + '/users'
+      self.url = self.base_url + '/users'
 
 
    def test_register_user_missingContentTypeHeader(self):

@@ -3,42 +3,25 @@ import requests
 from unittest import main
 
 from TestConfiguration import TestConfiguration
+from tests.test_helper_functions import register_david_janzen, login_david_janzen
 
 class GetChartsTests(TestConfiguration):
 
    def setUp(self):
-      self.headers = {'content-type' : 'application/json'}
+      self.headers = {'content-type': 'application/json'}
 
-      registerUrl = self.baseUrl + '/users'
-      registerBody = {
-         'firstName' : 'Dave',
-         'lastName' : 'Janzen',
-         'email' : 'dave.janzen18@gmail.com',
-         'password' : 'Stockd2g'
-      }
-      registerResponse = requests.post(url=registerUrl, data=json.dumps(registerBody), headers=self.headers)
-      registerResponseData = self.getJson(registerResponse)
+      register_data = register_david_janzen(self.base_url, self.headers)
+      self.assertTrue('id' in register_data)
+      self.assertTrue(register_data['id'] > 0)
 
-      self.assertEqual(registerResponse.status_code, 200)
-      self.assertTrue('id' in registerResponseData)
-      self.assertTrue(registerResponseData['id'] > 0)
+      login_data = login_david_janzen(self.base_url, self.headers)
+      self.assertIsNotNone(login_data['userId'])
+      self.assertIsNotNone(login_data['token'])
 
-      loginUrl = self.baseUrl + '/users/session'
-      loginBody = {
-         'email' : 'dave.janzen18@gmail.com',
-         'password' : 'Stockd2g'
-      }
-      loginResponse = requests.post(url=loginUrl, data=json.dumps(loginBody), headers=self.headers)
-      loginResponseData = self.getJson(loginResponse)
-      self.assertEqual(loginResponse.status_code, 200)
-      self.assertIsNotNone(loginResponseData['userId'])
-      self.assertIsNotNone(loginResponseData['token'])
-
-      self.userId = loginResponseData['userId']
-      self.token = loginResponseData['token']
+      self.userId = login_data['userId']
+      self.token = login_data['token']
       self.headers['Authorization'] = 'token ' + self.token
-      self.url = self.baseUrl + '/stocks'
-
+      self.url = self.base_url + '/stocks'
 
    def test_getCharts_recent(self):
       url = self.url + '/AMD/chart?length=recent'
@@ -72,7 +55,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_notLoggedIn(self):
-      logoutUrl = self.baseUrl + '/users/' + str(self.userId) + '/session'
+      logoutUrl = self.base_url + '/users/' + str(self.userId) + '/session'
       logoutResponse = requests.delete(url=logoutUrl, headers=self.headers)     
       self.assertEqual(logoutResponse.status_code, 200)
 

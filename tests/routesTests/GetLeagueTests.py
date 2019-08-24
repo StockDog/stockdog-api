@@ -4,62 +4,39 @@ from unittest import main
 
 from TestConfiguration import TestConfiguration
 
-from tests.test_helper_functions import create_league
+from tests.test_helper_functions import create_league, register_david_janzen, login_david_janzen, create_portfolio
 
 
 class GetLeagueTests(TestConfiguration):
     def setUp(self):
         self.headers = {'content-type': 'application/json'}
 
-        # creating a sample user
-        registerUrl = self.baseUrl + '/users'
-        registerBody = {
-           'firstName' : 'Dave',
-           'lastName' : 'Janzen',
-           'email' : 'dave.janzen18@gmail.com',
-           'password' : 'Stockd2g'
-        }
-        registerResponse = requests.post(url=registerUrl, 
-            data=json.dumps(registerBody), headers=self.headers)
-        registerResponseData = self.getJson(registerResponse)
-        self.assertEqual(registerResponse.status_code, 200)
-        self.assertTrue('id' in registerResponseData)
-        self.assertTrue(registerResponseData['id'] > 0)
-        
-        #logging in user
-        loginUrl = self.baseUrl + '/users/session'
-        loginBody = {
-           'email' : 'dave.janzen18@gmail.com',
-           'password' : 'Stockd2g'
-        }
-        loginResponse = requests.post(url=loginUrl, data=json.dumps(loginBody), 
-            headers=self.headers)
-        loginResponseData = self.getJson(loginResponse)
-        self.assertEqual(loginResponse.status_code, 200)
-        self.assertIsNotNone(loginResponseData['userId'])
-        self.assertIsNotNone(loginResponseData['token'])
-        
-        self.userId = loginResponseData['userId']
-        self.token = loginResponseData['token']
-        self.headers['Authorization'] = 'token ' + self.token
+        register_data = register_david_janzen(self.base_url, self.headers)
+        self.assertTrue('id' in register_data)
+        self.assertTrue(register_data['id'] > 0)
 
-        # creating league
-        leagueResponseData = create_league(self.baseUrl, self.headers)
+        login_data = login_david_janzen(self.base_url, self.headers)
+        self.assertIsNotNone(login_data['userId'])
+        self.assertIsNotNone(login_data['token'])
+        self.headers['Authorization'] = 'token ' + login_data['token']
 
-        # creating portfolio using the league's invite code
-        portfolioUrl = self.baseUrl + '/portfolios'
-        postPortfolioBody = {
-            "inviteCode": leagueResponseData['inviteCode'],
-            "name": 'david'
-        }
-        portfolioResponse = requests.post(url=portfolioUrl,
-            data=json.dumps(postPortfolioBody), headers=self.headers)
-        portfolioResponseData = self.getJson(portfolioResponse)
-        self.assertEquals(portfolioResponse.status_code, 200)
+        league_data = create_league(self.base_url, self.headers)
+        self.assertIsNotNone(league_data['id'])
+        self.assertIsNotNone(league_data['inviteCode'])
+        self.assertIsNotNone(league_data['startPos'])
+
+        portfolio_data = create_portfolio(self.base_url, self.headers, league_data['inviteCode'])
+        self.assertTrue('id' in portfolio_data)
+        self.assertTrue(portfolio_data['id'] > 0)
+        self.assertTrue('buyPower' in portfolio_data)
+        self.assertEquals(portfolio_data['buyPower'], 5000)
+
+        self.portfolioId = portfolio_data['id']
+        self.url = self.base_url + '/portfolios'
 
     def test_get_league(self):
-        response = requests.get(url=f"{self.baseUrl}/leagues/1",
-            headers=self.headers)
+        response = requests.get(url=f"{self.base_url}/leagues/1",
+                                headers=self.headers)
         responseData = self.getJson(response)
 
         self.assertEquals(response.status_code, 200)
@@ -70,15 +47,15 @@ class GetLeagueTests(TestConfiguration):
         self.assertEquals(responseData["end"], "Sat, 15 Feb 2020 00:00:00 GMT")
         self.assertEquals(len(responseData["portfolios"]), 1)
         self.assertEquals(responseData["portfolios"][0]["id"], 1)
-        self.assertEquals(responseData["portfolios"][0]["name"], "david")
+        self.assertEquals(responseData["portfolios"][0]["name"], "mynewportfolio")
         self.assertEquals(type(responseData["portfolios"][0]["value"]), float)
 
     def test_get_league_non_existant_id(self):
-        response = requests.get(url=f"{self.baseUrl}/leagues/2",
-            headers=self.headers)
+        response = requests.get(url=f"{self.base_url}/leagues/2",
+                                headers=self.headers)
         responseData = self.getJson(response)
 
         self.assertEquals(response.status_code, 404)
 
     def tearDown(self):
-      self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League'])
+        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League'])

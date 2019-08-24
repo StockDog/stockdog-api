@@ -4,53 +4,38 @@ from unittest import main
 
 from TestConfiguration import TestConfiguration
 
+from tests.test_helper_functions import register_david_janzen, login_david_janzen, create_league, create_portfolio
+
+
 class PostTransactionTests(TestConfiguration):
    def setUp(self):
-      self.headers = {'content-type' : 'application/json'}
+      self.headers = {'content-type': 'application/json'}
 
-      registerUrl = self.baseUrl + '/users'
-      registerBody = {
-         'firstName' : 'Dave',
-         'lastName' : 'Janzen',
-         'email' : 'dave.janzen18@gmail.com',
-         'password' : 'Stockd2g'
-      }
-      registerResponse = requests.post(url=registerUrl, data=json.dumps(registerBody), headers=self.headers)
-      registerResponseData = self.getJson(registerResponse)
-      self.assertEqual(registerResponse.status_code, 200)
-      self.assertTrue('id' in registerResponseData)
-      self.assertTrue(registerResponseData['id'] > 0)
-      
+      register_data = register_david_janzen(self.base_url, self.headers)
+      self.assertTrue('id' in register_data)
+      self.assertTrue(register_data['id'] > 0)
 
-      loginUrl = self.baseUrl + '/users/session'
-      loginBody = {
-         'email' : 'dave.janzen18@gmail.com',
-         'password' : 'Stockd2g'
-      }
-      loginResponse = requests.post(url=loginUrl, data=json.dumps(loginBody), headers=self.headers)
-      loginResponseData = self.getJson(loginResponse)
-      self.assertEqual(loginResponse.status_code, 200)
-      self.assertIsNotNone(loginResponseData['userId'])
-      self.assertIsNotNone(loginResponseData['token'])
-      
-      self.userId = loginResponseData['userId']
-      self.token = loginResponseData['token']
-      self.headers['Authorization'] = 'token ' + self.token
+      login_data = login_david_janzen(self.base_url, self.headers)
+      self.assertIsNotNone(login_data['userId'])
+      self.assertIsNotNone(login_data['token'])
+      self.headers['Authorization'] = 'token ' + login_data['token']
 
-      portfolioUrl = self.baseUrl + '/portfolios'
-      portfolioBody = {
-         'name' : 'mynewportfolio',
-      }
-      portfolioResponse = requests.post(url=portfolioUrl, data=json.dumps(portfolioBody), headers=self.headers)
-      portfolioResponseData = self.getJson(portfolioResponse)
-      self.assertEquals(portfolioResponse.status_code, 200)
-      self.assertTrue('id' in portfolioResponseData)
-      self.assertTrue(portfolioResponseData['id'] > 0)
-      self.assertTrue('buyPower' in portfolioResponseData)
-      self.assertEquals(portfolioResponseData['buyPower'], 10000)
+      league_data = create_league(self.base_url, self.headers)
+      self.assertIsNotNone(league_data['id'])
+      self.assertIsNotNone(league_data['inviteCode'])
+      self.assertIsNotNone(league_data['startPos'])
 
-      self.portfolioId = portfolioResponseData['id']
-      self.url = self.baseUrl + '/transactions'
+      portfolio_data = create_portfolio(self.base_url, self.headers, league_data['inviteCode'])
+      self.assertTrue('id' in portfolio_data)
+      self.assertTrue(portfolio_data['id'] > 0)
+      self.assertTrue('buyPower' in portfolio_data)
+      self.assertEquals(portfolio_data['buyPower'], 5000)
+
+      self.user_id = login_data['userId']
+      self.token = login_data['token']
+
+      self.portfolioId = portfolio_data['id']
+      self.url = self.base_url + '/transactions'
 
 
    def test_post_transaction_missingContentTypeHeader(self):
@@ -132,7 +117,7 @@ class PostTransactionTests(TestConfiguration):
 
 
    def test_post_transaction_notLoggedIn(self):
-      logoutUrl = self.baseUrl + '/users/' + str(self.userId) + '/session'
+      logoutUrl = self.base_url + '/users/' + str(self.user_id) + '/session'
       logoutResponse = requests.delete(url=logoutUrl, headers=self.headers)     
       self.assertEqual(logoutResponse.status_code, 200)
 

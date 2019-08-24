@@ -4,58 +4,36 @@ from unittest import main
 
 from TestConfiguration import TestConfiguration
 
-from tests.test_helper_functions import create_league
+from tests.test_helper_functions import create_league, create_portfolio, login_david_janzen, register_david_janzen
 
 
 class GetPortfolioTests(TestConfiguration):
     def setUp(self):
         self.headers = {'content-type': 'application/json'}
 
-        registerUrl = self.baseUrl + '/users'
-        registerBody = {
-            'firstName': 'Dave',
-            'lastName': 'Janzen',
-            'email': 'dave.janzen18@gmail.com',
-            'password': 'Stockd2g'
-        }
-        registerResponse = requests.post(url=registerUrl, data=json.dumps(registerBody), headers=self.headers)
-        registerResponseData = self.getJson(registerResponse)
-        self.assertEqual(registerResponse.status_code, 200)
-        self.assertTrue('id' in registerResponseData)
-        self.assertTrue(registerResponseData['id'] > 0)
+        register_data = register_david_janzen(self.base_url, self.headers)
+        self.assertTrue('id' in register_data)
+        self.assertTrue(register_data['id'] > 0)
 
-        loginUrl = self.baseUrl + '/users/session'
-        loginBody = {
-            'email': 'dave.janzen18@gmail.com',
-            'password': 'Stockd2g'
-        }
-        loginResponse = requests.post(url=loginUrl, data=json.dumps(loginBody), headers=self.headers)
-        loginResponseData = self.getJson(loginResponse)
-        self.assertEqual(loginResponse.status_code, 200)
-        self.assertIsNotNone(loginResponseData['userId'])
-        self.assertIsNotNone(loginResponseData['token'])
+        login_data = login_david_janzen(self.base_url, self.headers)
+        self.assertIsNotNone(login_data['userId'])
+        self.assertIsNotNone(login_data['token'])
+        self.headers['Authorization'] = 'token ' + login_data['token']
 
-        self.userId = loginResponseData['userId']
-        self.token = loginResponseData['token']
-        self.headers['Authorization'] = 'token ' + self.token
+        league_data = create_league(self.base_url, self.headers)
+        self.assertIsNotNone(league_data['id'])
+        self.assertIsNotNone(league_data['inviteCode'])
+        self.assertIsNotNone(league_data['startPos'])
 
-        league_data = create_league(self.baseUrl, self.headers)
+        portfolio_data = create_portfolio(self.base_url, self.headers, league_data['inviteCode'])
+        self.assertTrue('id' in portfolio_data)
+        self.assertTrue(portfolio_data['id'] > 0)
+        self.assertTrue('buyPower' in portfolio_data)
+        self.assertEquals(portfolio_data['buyPower'], 5000)
 
-        portfolioUrl = self.baseUrl + '/portfolios'
-        portfolioBody = {
-            'name': 'mynewportfolio',
-            'inviteCode': league_data["inviteCode"]
-        }
-        portfolioResponse = requests.post(url=portfolioUrl, data=json.dumps(portfolioBody), headers=self.headers)
-        portfolioResponseData = self.getJson(portfolioResponse)
-        self.assertEquals(portfolioResponse.status_code, 200)
-        self.assertTrue('id' in portfolioResponseData)
-        self.assertTrue(portfolioResponseData['id'] > 0)
-        self.assertTrue('buyPower' in portfolioResponseData)
-        self.assertEquals(portfolioResponseData['buyPower'], 5000)
-
-        self.portfolioId = int(portfolioResponseData['id'])
-        self.url = self.baseUrl + '/portfolios'
+        self.portfolioId = int(portfolio_data['id'])
+        self.url = self.base_url + '/portfolios'
+        self.userId = login_data['userId']
 
     def test_getPortfolio_havingNoPortfolioItems(self):
         url = self.url + '/' + str(self.portfolioId)
@@ -86,7 +64,7 @@ class GetPortfolioTests(TestConfiguration):
             "action": "BUY",
             "portfolioId": self.portfolioId
         }
-        transactionUrl = self.baseUrl + '/transactions'
+        transactionUrl = self.base_url + '/transactions'
         buyResponse = requests.post(url=transactionUrl, data=json.dumps(buyBody), headers=self.headers)
         buyResponseData = self.getJson(buyResponse)
 
@@ -123,7 +101,7 @@ class GetPortfolioTests(TestConfiguration):
         self.assertTrue('end' in responseData['league'])
 
     def test_getPortfolio_notLoggedIn(self):
-        logoutUrl = self.baseUrl + '/users/' + str(self.userId) + '/session'
+        logoutUrl = self.base_url + '/users/' + str(self.userId) + '/session'
         logoutResponse = requests.delete(url=logoutUrl, headers=self.headers)
         self.assertEqual(logoutResponse.status_code, 200)
 
@@ -167,11 +145,11 @@ class GetPortfolioTests(TestConfiguration):
         responseData = self.getJson(response)
 
     def test_getPortfolio_doesNotBelongToUser(self):
-        logoutUrl = self.baseUrl + '/users/' + str(self.userId) + '/session'
+        logoutUrl = self.base_url + '/users/' + str(self.userId) + '/session'
         logoutResponse = requests.delete(url=logoutUrl, headers=self.headers)
         self.assertEqual(logoutResponse.status_code, 200)
 
-        registerUrl = self.baseUrl + '/users'
+        registerUrl = self.base_url + '/users'
         registerBody = {
             'firstName': 'NotDave',
             'lastName': 'NotJanzen',
@@ -184,7 +162,7 @@ class GetPortfolioTests(TestConfiguration):
         self.assertTrue('id' in registerResponseData)
         self.assertTrue(registerResponseData['id'] > 0)
 
-        loginUrl = self.baseUrl + '/users/session'
+        loginUrl = self.base_url + '/users/session'
         loginBody = {
             'email': 'daveeee.janzen18@gmail.com',
             'password': 'Stockd2g'
