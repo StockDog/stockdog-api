@@ -18,7 +18,7 @@ class GetChartsTests(TestConfiguration):
       self.assertIsNotNone(login_data['userId'])
       self.assertIsNotNone(login_data['token'])
 
-      self.userId = login_data['userId']
+      self.user_id = login_data['userId']
       self.token = login_data['token']
       self.headers['Authorization'] = 'token ' + self.token
       self.url = self.base_url + '/stocks'
