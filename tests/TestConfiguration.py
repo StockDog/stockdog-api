@@ -26,7 +26,7 @@ class TestConfiguration(TestCase):
          raise e
 
       self.headers = {'content-type' : 'application/json'}
-      self.baseUrl = TRAVIS_URL
+      self.base_url = TRAVIS_URL
 
    
    def getJson(self, res):

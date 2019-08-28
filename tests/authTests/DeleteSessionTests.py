@@ -9,7 +9,7 @@ class DeleteSessionTests(TestConfiguration):
    def setUp(self):      
       self.headers = {'content-type' : 'application/json'}
 
-      registerUrl = self.baseUrl + '/users'
+      registerUrl = self.base_url + '/users'
       registerBody = {
          'firstName' : 'Dave',
          'lastName' : 'Janzen',
@@ -23,7 +23,7 @@ class DeleteSessionTests(TestConfiguration):
       self.assertTrue('id' in registerResponseData)
       self.assertTrue(registerResponseData['id'] > 0)
 
-      loginUrl = self.baseUrl + '/users/session'
+      loginUrl = self.base_url + '/users/session'
       loginBody = {
          'email' : 'dave.janzen18@gmail.com',
          'password' : 'Stockd2g'
@@ -36,7 +36,7 @@ class DeleteSessionTests(TestConfiguration):
       
       self.userId = loginResponseData['userId']
       self.token = loginResponseData['token']
-      self.url = self.baseUrl + '/users/' + str(self.userId) + '/session'
+      self.url = self.base_url + '/users/' + str(self.userId) + '/session'
       self.headers['Authorization'] = 'token ' + self.token
 
 
@@ -75,7 +75,7 @@ class DeleteSessionTests(TestConfiguration):
 
    
    def test_logout_wrongUser(self):
-      url = self.baseUrl + '/users/' + str(self.userId + 30) + '/session'
+      url = self.base_url + '/users/' + str(self.userId + 30) + '/session'
       response = requests.delete(url=url, headers=self.headers)
       
       self.assertEqual(response.status_code, 403)

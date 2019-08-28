@@ -9,9 +9,9 @@ class PostSessionTests(TestConfiguration):
 
    def setUp(self):
       self.headers = {'content-type' : 'application/json'}
-      self.url = self.baseUrl + '/users/session'
+      self.url = self.base_url + '/users/session'
       
-      url = self.baseUrl + '/users'
+      url = self.base_url + '/users'
       body = {
          'firstName' : 'Dave',
          'lastName' : 'Janzen',
