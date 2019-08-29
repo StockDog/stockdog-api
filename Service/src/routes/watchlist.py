@@ -1,48 +1,62 @@
+import requests
 from flask import Blueprint, jsonify, make_response, request, Response, g
 import simplejson as json
 
+from auth import auth
+from request_validator import validator
+from request_validator.schemas import watchlist_post_del_schema
+from routes.stock import getSharePrice, handleIexError
 from util.error_map import errors
 
 watchlist_api = Blueprint('watchlist_api', __name__)
 
 
-@watchlist_api.route('/api/watchlist', methods=['POST'])
+@watchlist_api.route('/api/v1.0/watchlists', methods=['POST'])
+@auth.login_required
+@validator.validate_body(watchlist_post_del_schema.fields)
 def post_watchlist():
-   body = request.get_json()
-   try:
-      result = WatchlistSchema().load(body)
-   except ValidationError as err:
-      return make_response(json.dumps(err.messages), 400)
+    body = request.get_json()
 
-   g.cursor.execute("SELECT * FROM Watchlist WHERE portfolioId = %s AND ticker = %s",
-      [body['portfolioId'], body['ticker']])
+    error = validate_post_del_watchlist(body)
 
-   watchlistItem = g.cursor.fetchone()
-   if watchlistItem:
-      return make_response(jsonify(error=errors['duplicateWatchlistItem']), 400)
+    if error:
+        return error
 
-   g.cursor.execute("INSERT INTO Watchlist(portfolioId, ticker) VALUES (%s, %s)",
-      [body['portfolioId'], body['ticker']])
+    # Insert into table
+    g.cursor.execute('INSERT INTO Watchlist(portfolioId, ticker) VALUES (%s, %s)',
+                     [body['portfolioId'], body['ticker']])
 
-   return Response(status=200)
+    return jsonify(id=g.cursor.lastrowid)
 
 
-@watchlist_api.route('/api/watchlist', methods=['GET'])
-def get_watchlists():
-   portfolioId = request.args.get('portfolioId')
+@watchlist_api.route('/api/v1.0/watchlists', methods=['DELETE'])
+@auth.login_required
+@validator.validate_body(watchlist_post_del_schema.fields)
+def del_watchlist():
+    body = request.get_json()
 
-   if portfolioId is not None:
-      g.cursor.execute("SELECT * FROM Watchlist WHERE portfolioId = %s", portfolioId)
-   else:
-      g.cursor.execute("SELECT * FROM Watchlist")
+    error = validate_post_del_watchlist(body)
 
-   watchlists = g.cursor.fetchall()
-   return json.dumps(watchlists)
+    if error:
+        return error
+
+    # Insert into table
+    g.cursor.execute('DELETE FROM Watchlist WHERE portfolioId = %s AND ticker = %s',
+                     [body['portfolioId'], body['ticker']])
+
+    return jsonify(success=True)
 
 
-@watchlist_api.route('/api/watchlist/<watchlistId>', methods=['DELETE'])
-def del_watchlist(watchlistId):
+# Used to validate both post and del endpoints for watchlists
+def validate_post_del_watchlist(body):
+    # See if user belongs to given portfolioId
+    if not auth.portfolio_belongsTo_user(body['portfolioId']):
+        return Response(status=403)
 
-   g.cursor.execute("DELETE FROM Watchlist WHERE id = %s", watchlistId)
-
-   return Response(status=200)
+    # See if the ticker is valid
+    try:
+        getSharePrice(body['ticker'])
+    except requests.HTTPError as e:
+        return handleIexError(e)
+    except TypeError:
+        return make_response(jsonify(UnsupportedTicker=errors['unsupportedTicker']), 400)

@@ -1,5 +1,4 @@
 import json
-
 import requests
 
 from TestConfiguration import TestConfiguration
@@ -32,11 +31,11 @@ class PostWatchlistTests(TestConfiguration):
         self.assertEquals(portfolio_data['buyPower'], 5000)
 
         self.portfolio_id = portfolio_data['id']
-        self.url = self.base_url + '/watchlists
+        self.url = self.base_url + '/watchlists'
 
     def test_post_watchlist(self):
         body = {
-            'portfolio_id': self.portfolio_id,
+            'portfolioId': self.portfolio_id,
             'ticker': 'AMD'
         }
         response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
@@ -47,17 +46,48 @@ class PostWatchlistTests(TestConfiguration):
 
     def test_post_watchlist_invalid_ticker(self):
         body = {
-            'portfolio_id': self.portfolio_id,
+            'portfolioId': self.portfolio_id,
             'ticker': 'FUCK'
         }
         response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
-        self.assertEquals(response.status_code, 404)
+        self.assertEquals(response.status_code, 400)
 
     def test_post_watchlist_invalid_portfolio(self):
         body = {
-            'portfolio_id': 2,
+            'portfolioId': 2,
             'ticker': 'AMD'
         }
 
         response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
         self.assertEquals(response.status_code, 403)
+
+    def test_del_watchlist(self):
+        body = {
+            'portfolioId': self.portfolio_id,
+            'ticker': 'AMD'
+        }
+        response = requests.delete(url=self.url, data=json.dumps(body), headers=self.headers)
+        self.assertEquals(response.status_code, 200)
+
+        response_data = response.json()
+        self.assertEquals(response.status_code, 200)
+
+    def test_del_watchlist_invalid_ticker(self):
+        body = {
+            'portfolioId': self.portfolio_id,
+            'ticker': 'FUCK'
+        }
+        response = requests.delete(url=self.url, data=json.dumps(body), headers=self.headers)
+        self.assertEquals(response.status_code, 400)
+
+    def test_del_watchlist_invalid_portfolio(self):
+        body = {
+            'portfolioId': 2,
+            'ticker': 'AMD'
+        }
+
+        response = requests.delete(url=self.url, data=json.dumps(body), headers=self.headers)
+        self.assertEquals(response.status_code, 403)
+
+    def tearDown(self):
+        self.deleteTables(['League', 'User', 'Portfolio', 'Watchlist'])
