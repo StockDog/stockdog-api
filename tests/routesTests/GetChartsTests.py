@@ -55,7 +55,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_notLoggedIn(self):
-      logoutUrl = self.base_url + '/users/' + str(self.userId) + '/session'
+      logoutUrl = self.base_url + '/users/' + str(self.user_id) + '/session'
       logoutResponse = requests.delete(url=logoutUrl, headers=self.headers)     
       self.assertEqual(logoutResponse.status_code, 200)
 
