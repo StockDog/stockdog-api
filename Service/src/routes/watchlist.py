@@ -22,6 +22,13 @@ def post_watchlist():
     if error:
         return error
 
+    # Make sure ticker doesn't exist in portfolio already
+    g.cursor.execute('SELECT id FROM Watchlist WHERE portfolioId = %s AND ticker = %s',
+                     [body['portfolioId'], body['ticker']])
+
+    if g.cursor.rowcount > 0:
+        return make_response(jsonify(error=errors['tickerAlreadyInWatchlist']), 400)
+
     # Insert into table
     g.cursor.execute('INSERT INTO Watchlist(portfolioId, ticker) VALUES (%s, %s)',
                      [body['portfolioId'], body['ticker']])

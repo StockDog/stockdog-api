@@ -44,6 +44,15 @@ class PostWatchlistTests(TestConfiguration):
         response_data = response.json()
         self.assertEquals(response_data['id'], 1)
 
+    def test_double_post_watchlist(self):
+        body = {
+            'portfolioId': self.portfolio_id,
+            'ticker': 'AMD'
+        }
+        requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
+        response = requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
+        self.assertEquals(response.status_code, 400)
+
     def test_post_watchlist_invalid_ticker(self):
         body = {
             'portfolioId': self.portfolio_id,
@@ -66,6 +75,7 @@ class PostWatchlistTests(TestConfiguration):
             'portfolioId': self.portfolio_id,
             'ticker': 'AMD'
         }
+        requests.post(url=self.url, data=json.dumps(body), headers=self.headers)
         response = requests.delete(url=self.url, data=json.dumps(body), headers=self.headers)
         self.assertEquals(response.status_code, 200)
 
