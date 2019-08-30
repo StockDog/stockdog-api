@@ -20,4 +20,6 @@ errors = {
    'leagueDurationTooLong': 'Leagues can last a maximum of 1 year',
    'invalidIexToken': 'The IEX token is invalid',
    'leagueNotFound': 'Given league ID does not exists'
+   'tickerNotWatchlisted': 'The provided ticker is not on the watchlist of the given portfolio',
+   'tickerAlreadyInWatchlist': 'The ticker is already watchlisted in this portfolio'
 }

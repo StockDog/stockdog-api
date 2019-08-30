@@ -99,5 +99,14 @@ class PostWatchlistTests(TestConfiguration):
         response = requests.delete(url=self.url, data=json.dumps(body), headers=self.headers)
         self.assertEquals(response.status_code, 403)
 
+    def test_del_watchlist_non_existant(self):
+        body = {
+            'portfolioId': 1,
+            'ticker': 'WMT'
+        }
+
+        response = requests.delete(url=self.url, data=json.dumps(body), headers=self.headers)
+        self.assertEquals(response.status_code, 400)
+
     def tearDown(self):
         self.deleteTables(['League', 'User', 'Portfolio', 'Watchlist'])

@@ -51,7 +51,10 @@ def del_watchlist():
     g.cursor.execute('DELETE FROM Watchlist WHERE portfolioId = %s AND ticker = %s',
                      [body['portfolioId'], body['ticker']])
 
-    return jsonify(success=True)
+    if g.cursor.rowcount == 1:
+        return jsonify(success=True)
+    else:
+        return make_response(jsonify(error=errors['tickerNotWatchlisted']), 400)
 
 
 # Used to validate both post and del endpoints for watchlists
@@ -66,4 +69,4 @@ def validate_post_del_watchlist(body):
     except requests.HTTPError as e:
         return handleIexError(e)
     except TypeError:
-        return make_response(jsonify(UnsupportedTicker=errors['unsupportedTicker']), 400)
+        return make_response(jsonify(error=errors['unsupportedTicker']), 400)
