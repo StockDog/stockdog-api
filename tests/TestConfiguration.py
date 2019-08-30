@@ -1,4 +1,3 @@
-import requests
 import simplejson
 from unittest import TestCase
 import sys
