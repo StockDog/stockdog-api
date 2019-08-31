@@ -76,8 +76,56 @@ def get_portfolio(portfolioId):
     attach_portfolio_value(portfolio)
     attach_league(portfolio)
 
-
     return json.dumps(portfolio)
+
+
+@portfolio_api.route('/api/v1.0/portfolios/<portfolio_id>/history/<time_frame>', methods=['GET'])
+def get_portfolio_history(portfolio_id, time_frame):
+    if not time_frame == 'month' or 'year' or 'all':
+        return make_response(jsonify(error='invalidTimeFrame', message=errors['invalidTimeFrame']), 404)
+
+    if time_frame == 'all':
+        return json.dumps(get_all_portfolio_history(portfolio_id))
+    elif time_frame == 'year':
+        return json.dumps(get_year_portfolio_history(portfolio_id))
+    else:
+        return json.dumps(get_month_portfolio_history(portfolio_id))
+
+
+def get_all_portfolio_history(portfolio_id):
+    g.cursor.execute('SELECT * FROM PortfolioHistory WHERE portfolioId = %s', portfolio_id)
+    history = g.cursor.fetchall()
+
+    if len(history) == 0:
+        return None
+
+    return history
+
+
+def get_year_portfolio_history(portfolio_id):
+    history = get_all_portfolio_history(portfolio_id)
+    year_history = []
+
+    if len(history) == 0:
+        return None
+
+    # Gather every tenth data point
+    history_data_idx = 0
+    while history[history_data_idx]:
+        # Prepend data point
+        year_history = history[history_data_idx] + year_history
+        history_data_idx = history_data_idx + 10
+
+    return year_history
+
+def get_month_portfolio_history(portfolio_id):
+    history = get_all_portfolio_history(portfolio_id)
+
+    if len(history) == 0:
+        return None
+
+    # Get the last 20 endpoints
+    return history[max(1, len(history) - 20)]
 
 
 def attach_portfolioItems(portfolio):
@@ -121,59 +169,6 @@ def attach_league(portfolio):
     # Stringify dates
     portfolio['league']['start'] = portfolio['league']['start'].strftime('%m-%d-%Y')
     portfolio['league']['end'] = portfolio['league']['end'].strftime('%m-%d-%Y')
-
-# @pVortfolio_api.route('/api/portfolio', methods=['GET'])
-# def get_portfolios():
-#    userId = request.args.get('userId')
-#    leagueId = request.args.get('leagueId')
-
-#    if userId and leagueId:
-#       return make_response(jsonify(error=errors['unsupportedPortfolioGet']), 400)
-
-#    if leagueId:
-#       g.cursor.execute("SELECT p.id, p.buyPower, p.name AS nickname, p.userId, " +
-#          "l.name AS league, l.id AS leagueId, l.start, l.end, l.startPos " +
-#          "FROM Portfolio AS p LEFT JOIN League as l ON p.leagueId = l.id " +
-#          "WHERE l.id = %s", leagueId)
-
-#    elif userId:
-#       g.cursor.execute("SELECT p.id, p.buyPower, p.name AS nickname, p.userId, " +
-#          "l.name AS league, l.id AS leagueId, l.start, l.end, l.startPos " +
-#          "FROM Portfolio AS p LEFT JOIN League as l ON p.leagueId = l.id " +
-#          "WHERE userId = %s", userId)
-#    else:
-#       g.cursor.execute("SELECT p.id, p.buyPower, p.name AS nickname, p.userId, " +
-#          "l.name AS league, l.id AS leagueId, l.start, l.end, l.startPos " +
-#          "FROM Portfolio AS p LEFT JOIN League as l ON p.leagueId = l.id")
-
-#    portfolios = g.cursor.fetchall()
-#    portfoliosWithValues = add_portfolio_values(portfolios)
-
-#    return json.dumps(portfoliosWithValues, default=Utility.dateToStr)
-
-
-# def add_portfolio_values(portfolios):
-#    for portfolio in portfolios:
-#       portfolio['value'] = get_recent_portfolio_value(portfolio['id'])
-
-#    return portfolios
-
-
-# def get_recent_portfolio_value(portfolioId):
-#    g.cursor.execute("SELECT * FROM PortfolioHistory " + 
-#       "WHERE portfolioId = %s ORDER BY datetime DESC LIMIT 1", portfolioId)
-
-#    portfolioValue = g.cursor.fetchone()
-#    if portfolioValue:
-#       return float(portfolioValue['value'])
-#    else:
-#       return -1
-
-
-# @portfolio_api.route('/api/portfolio/<portfolioId>/history/now', methods=['GET'])
-# def get_most_recent_portfolio_value(portfolioId):
-#    return jsonify(value=get_recent_portfolio_value(portfolioId))
-
 
 # @portfolio_api.route('/api/portfolio/<portfolioId>', methods=['GET'])
 # def get_portfolio(portfolioId):
