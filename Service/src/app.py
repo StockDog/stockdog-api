@@ -10,6 +10,7 @@ from routes.portfolio import portfolio_api
 from routes.transaction import transaction_api
 from routes.watchlist import watchlist_api
 from routes.stock import stock_api
+from routes.ticker import ticker_api
 
 from util.db_connection import getDBConn
 from util.logger import Logger
@@ -24,6 +25,7 @@ app.register_blueprint(transaction_api)
 app.register_blueprint(watchlist_api)
 app.register_blueprint(user_api)
 app.register_blueprint(stock_api)
+app.register_blueprint(ticker_api)
 
 DEFAULT_PORT_NUM = 5005
 DEFAULT_ENV = 'local'
@@ -65,7 +67,7 @@ def getPortNum():
    return args.port or DEFAULT_PORT_NUM
 
 
-def getEnv():
+def getEnv(): 
    return args.environment or DEFAULT_ENV
 
 
