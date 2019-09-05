@@ -34,41 +34,43 @@ class GetWatchlistTests(TestConfiguration):
         self.url = self.base_url + '/watchlists'
 
     def test_get_watchlist_one_item(self):
-        watchlist_ticker_1_res = requests.post(self.url, {'portfolioId': self.portfolio_id, 'ticker': 'AMD'})
+        watchlist_ticker_1_res = requests.post(url=self.url,
+                                               data=json.dumps({'portfolioId': self.portfolio_id, 'ticker': 'AMD'}),
+                                               headers=self.headers)
         self.assertEquals(watchlist_ticker_1_res.status_code, 200)
 
-        res = requests.get(f"{self.url}/{self.portfolio_id}")
+        res = requests.get(url=f"{self.url}/{self.portfolio_id}", headers=self.headers)
         self.assertEquals(res.status_code, 200)
 
         data = res.json()
-        self.assertEquals(data[0].id, 1)
-        self.assertEquals(data[0].portfolioId, 1)
-        self.assertEquals(data[0].ticker, 'AMD')
+        self.assertEquals(data[0]['id'], 1)
+        self.assertEquals(data[0]['portfolioId'], 1)
+        self.assertEquals(data[0]['ticker'], 'AMD')
+        self.assertIsNotNone(data[0]['price'])
 
     def test_get_watchlist_multiple_items(self):
         # Adding a few watchlist items
-        watchlist_ticker_1_res = requests.post(self.url, {'portfolioId': self.portfolio_id, 'ticker': 'AMD'})
+        watchlist_ticker_1_res = requests.post(url=self.url,
+                                               data=json.dumps({'portfolioId': self.portfolio_id, 'ticker': 'AMD'}),
+                                               headers=self.headers)
         self.assertEquals(watchlist_ticker_1_res.status_code, 200)
-        watchlist_ticker_2_res = requests.post(self.url, {'portfolioId': self.portfolio_id, 'ticker': 'FB'})
+        watchlist_ticker_2_res = requests.post(url=self.url,
+                                               data=json.dumps({'portfolioId': self.portfolio_id, 'ticker': 'FB'}),
+                                               headers=self.headers)
         self.assertEquals(watchlist_ticker_2_res.status_code, 200)
-        watchlist_ticker_3_res = requests.post(self.url, {'portfolioId': self.portfolio_id, 'ticker': 'TSLA'})
+        watchlist_ticker_3_res = requests.post(url=self.url,
+                                               data=json.dumps({'portfolioId': self.portfolio_id, 'ticker': 'TSLA'}),
+                                               headers=self.headers)
         self.assertEquals(watchlist_ticker_3_res.status_code, 200)
 
-        res = requests.get(f"{self.url}/{self.portfolio_id}")
+        res = requests.get(url=f"{self.url}/{self.portfolio_id}", headers=self.headers)
         self.assertEquals(res.status_code, 200)
 
         data = res.json()
         self.assertEquals(len(data), 3)
 
-    def test_get_watchlist_no_items(self):
-        res = requests.get(f"{self.url}/{self.portfolio_id}")
-        self.assertEquals(res.status_code, 204)
-
-        data = res.json()
-        self.assertEquals(len(data), 0)
-
     def test_get_watchlist_not_authorized(self):
-        res = requests.get(f"{self.url}/2")
+        res = requests.get(f"{self.url}/2", headers=self.headers)
         self.assertEquals(res.status_code, 403)
 
     def tearDown(self):

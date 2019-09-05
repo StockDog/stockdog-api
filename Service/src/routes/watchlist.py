@@ -5,7 +5,7 @@ import simplejson as json
 from auth import auth
 from request_validator import validator
 from request_validator.schemas import watchlist_post_del_schema
-from routes.stock import getSharePrice, handleIexError
+from routes.stock import getSharePrice, handleIexError, getSharePrices
 from util.error_map import errors
 
 watchlist_api = Blueprint('watchlist_api', __name__)
@@ -70,3 +70,25 @@ def validate_post_del_watchlist(body):
         return handleIexError(e)
     except TypeError:
         return make_response(jsonify(error=errors['unsupportedTicker']), 400)
+
+@watchlist_api.route('/api/v1.0/watchlists/<portfolio_id>', methods=['GET'])
+@auth.login_required
+def get_watchlist(portfolio_id):
+    # Make sure the user belongs to the portfolio
+    if not auth.portfolio_belongsTo_user(portfolio_id):
+        return Response(status=403)
+
+    g.cursor.execute('SELECT * FROM Watchlist WHERE portfolioId = %s', [portfolio_id])
+    watchlist = g.cursor.fetchall()
+
+    # Get all the watchlist ticker values
+    tickers = []
+    for item in watchlist:
+        tickers.append(item['ticker'])
+
+    tickerPrices = getSharePrices(tickers)
+
+    for item in watchlist:
+        item['price'] = tickerPrices[item['ticker']]
+
+    return jsonify(watchlist)
