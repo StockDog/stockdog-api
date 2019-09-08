@@ -19,7 +19,7 @@ errors = {
    'endBeforeStart': 'The end date can not be before the start date',
    'leagueDurationTooLong': 'Leagues can last a maximum of 1 year',
    'invalidIexToken': 'The IEX token is invalid',
-   'leagueNotFound': 'Given league ID does not exists',
+   'leagueNotFound': 'Given league ID does not exist',
    'tickerNotWatchlisted': 'The provided ticker is not on the watchlist of the given portfolio',
    'tickerAlreadyInWatchlist': 'The ticker is already watchlisted in this portfolio'
 }
