@@ -113,6 +113,30 @@ def getSharePrice(ticker):
 
    return response["latestPrice"]
 
+def getSharePrices(tickers):
+   tickersDelimited = ','.join(tickers)
+   requestUrl = f'https://cloud.iexapis.com/stable/stock/market/quote?symbols={tickersDelimited}&token={getIexToken()}&filter=symbol,latestPrice'
+   g.log.info('IEX API hitting: ' + requestUrl)
+   startTime = time.time()
+   rawResponse = requests.get(requestUrl)
+   iexTime = time.time() - startTime
+
+   if (rawResponse.status_code != 200):
+      rawResponse.raise_for_status()
+
+   response = rawResponse.json()
+
+   # Converting to dictionary because it is better
+   priceDict = {}
+   for stock in response:
+      priceDict[stock['symbol']] = stock['latestPrice']
+
+   parseTime = time.time() - startTime
+   g.log.info('IEX time is: ' + str(iexTime))
+   g.log.info('Parsing data time is: ' + str(parseTime))
+
+   return priceDict
+
 def getInterval(length):
    if length == 'recent' or length == 'day':
       return DAY
