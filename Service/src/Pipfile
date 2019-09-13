@@ -22,6 +22,7 @@ MarkupSafe = "==1.1.1"
 PyMySQL = "==0.9.3"
 validate_email = "==1.3"
 Werkzeug = "==0.15.5"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
