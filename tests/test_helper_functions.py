@@ -13,6 +13,7 @@ def register_david_janzen(base_url, headers):
     registerResponse = requests.post(url=registerUrl, data=json.dumps(registerBody), headers=headers)
     return registerResponse.json()
 
+
 def login_david_janzen(base_url, headers):
     loginUrl = base_url + '/users/session'
     loginBody = {
@@ -38,6 +39,23 @@ def create_league(base_url, headers):
 
     return league_response_data
 
+
+def create_league_with_info(base_url, headers, name, startPos, start, end):
+    # creating league
+    league_base_url = base_url + '/leagues'
+    post_league_body = {
+        "name": name,
+        "startPos": startPos,
+        "start": start,
+        "end": end
+    }
+    league_response = requests.post(url=league_base_url,
+                                    data=json.dumps(post_league_body), headers=headers)
+    league_response_data = league_response.json()
+
+    return league_response_data
+
+
 def create_portfolio(base_url, headers, invite_code):
     portfolioUrl = base_url + '/portfolios'
     portfolioBody = {
@@ -46,4 +64,3 @@ def create_portfolio(base_url, headers, invite_code):
     }
     portfolioResponse = requests.post(url=portfolioUrl, data=json.dumps(portfolioBody), headers=headers)
     return portfolioResponse.json()
-

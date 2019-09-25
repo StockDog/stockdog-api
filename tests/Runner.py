@@ -14,6 +14,7 @@ from routesTests.GetStockTests import StockTests
 from routesTests.GetLeagueTests import GetLeagueTests
 from routesTests.PostDeleteWatchlistTests import PostWatchlistTests
 from routesTests.GetWatchlistTests import GetWatchlistTests
+from routesTests.GetLeagueInviteCodesTests import GetLeagueInviteCodesTests
 
 if __name__ == '__main__':
    loader = TestLoader()
@@ -31,7 +32,8 @@ if __name__ == '__main__':
          loader.loadTestsFromTestCase(StockTests),
          loader.loadTestsFromTestCase(GetLeagueTests),
          loader.loadTestsFromTestCase(PostWatchlistTests),
-         loader.loadTestsFromTestCase(GetWatchlistTests)
+         loader.loadTestsFromTestCase(GetWatchlistTests),
+         loader.loadTestsFromTestCase(GetLeagueInviteCodesTests)
       )
    )
    runner = TextTestRunner()

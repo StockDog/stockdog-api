@@ -68,3 +68,27 @@ def get_league(league_id):
         portfolios=portfolios
     )
 
+
+@league_api.route('/api/v1.0/leagues', methods=['GET'])
+@auth.login_required
+def get_leagues():
+    g.cursor.execute('SELECT id, name, startPos, start, end, inviteCode FROM League')
+    leagues = g.cursor.fetchall()
+
+    # Attach league status
+    # Stringfy dates
+    for league in leagues:
+        league['status'] = get_league_status(league['start'], league['end'])
+        league['start'] = league['start'].strftime('%m-%d-%Y')
+        league['end'] = league['end'].strftime('%m-%d-%Y')
+
+    return json.dumps(leagues)
+
+
+def get_league_status(start, end):
+    if start < datetime.now() < end:
+        return "active"
+    elif end < datetime.now():
+        return "ended"
+    else:
+        return "planned"
