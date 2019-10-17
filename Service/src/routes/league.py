@@ -54,9 +54,9 @@ def get_league(league_id):
     g.cursor.execute("SELECT * FROM Portfolio WHERE leagueId=%s", league_id)
     portfolios = g.cursor.fetchall()
 
-    # attach portfolio value for each portfolio
+    portfolio_funcs.attach_portfolioItems(portfolios)
+
     for portfolio in portfolios:
-        portfolio_funcs.attach_portfolioItems(portfolio)
         portfolio_funcs.attach_portfolio_value(portfolio)
 
     return jsonify(
