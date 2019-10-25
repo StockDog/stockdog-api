@@ -9,3 +9,4 @@ api.pid
 save_portfolio_values.log   
 *.swp
 .vscode
+.idea

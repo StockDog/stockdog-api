@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "96181dc1-aa09-4fa0-aad9-7c7be6fec515",
+		"_postman_id": "400d6669-662a-4e4f-a2c6-373a1653309d",
 		"name": "Stock Dog",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -898,6 +898,101 @@
 							],
 							"path": [
 								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dom creates league yearly",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "30c0cc97-eedc-40a6-ad6f-61e00d3550aa",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"yearlyLeagueInviteCode\", jsonData.inviteCode);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userDomToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"yearly\",\n\t\"startPos\": 250000,\n\t\"start\": \"01-01-2020\",\n\t\"end\": \"01-15-2020\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/leagues",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"leagues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create dom portfolio for yearly league",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cca9b45a-63e1-4869-aa72-b127c301403f",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"domYearlyPortfolio\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userDomToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"inviteCode\": \"{{yearlyLeagueInviteCode}}\",\n\t\"name\": \"domidick\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/portfolios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"portfolios"
 							]
 						}
 					},

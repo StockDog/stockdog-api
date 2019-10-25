@@ -56,6 +56,32 @@ def getStockInformation(ticker):
 
    return response
 
+# Returns a dict of stock information
+def getStockInformations(tickers):
+   tickersDelimited = ','.join(tickers)
+   requestUrl = f'https://cloud.iexapis.com/stable/stock/market/company?symbols={tickersDelimited}&token={getIexToken()}'
+   
+   g.log.info('IEX API hitting: ' + requestUrl)
+   startTime = time.time()
+   rawResponse = requests.get(requestUrl)
+   iexTime = time.time() - startTime
+
+   if (rawResponse.status_code != 200):
+      rawResponse.raise_for_status()
+
+   response = rawResponse.json()
+
+   # Converting to dictionary because it is better
+   infoDict = {}
+   for stock in response:
+      infoDict[stock['symbol']] = stock
+
+   parseTime = time.time() - startTime
+   g.log.info('IEX time is: ' + str(iexTime))
+   g.log.info('Parsing data time is: ' + str(parseTime))
+
+   return infoDict
+
 @stock_api.route('/api/v1.0/stocks/<ticker>/chart', methods=['GET'])
 @auth.login_required
 @validator.validate_params(charts_schema.fields)
@@ -113,6 +139,7 @@ def getSharePrice(ticker):
 
    return response["latestPrice"]
 
+# Returns a dictionary of stocks and their prices
 def getSharePrices(tickers):
    tickersDelimited = ','.join(tickers)
    requestUrl = f'https://cloud.iexapis.com/stable/stock/market/quote?symbols={tickersDelimited}&token={getIexToken()}&filter=symbol,latestPrice'

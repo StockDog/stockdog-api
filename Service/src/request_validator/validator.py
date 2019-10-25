@@ -23,6 +23,7 @@ def validate(data, fields):
 
 
 def check_headers(errors):
+
    contentTypeHeader = request.headers.get('Content-Type')
    if contentTypeHeader is None:
       errors.append({'MissingHeader' : 'Content-Type is a required header'})

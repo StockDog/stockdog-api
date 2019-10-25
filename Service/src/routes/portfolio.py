@@ -50,8 +50,8 @@ def get_portfolios():
 
     portfolios = g.cursor.fetchall()
 
+    attach_portfolioItems(portfolios)
     for portfolio in portfolios:
-        attach_portfolioItems(portfolio)
         attach_portfolio_value(portfolio)
         attach_league(portfolio)
 
@@ -72,36 +72,62 @@ def get_portfolio(portfolioId):
     if portfolio is None:
         return Response(status=404)
 
-    attach_portfolioItems(portfolio)
+    attach_portfolioItems([portfolio])
     attach_portfolio_value(portfolio)
     attach_league(portfolio)
 
 
     return json.dumps(portfolio)
 
-
-def attach_portfolioItems(portfolio):
+# Pass in array of portfolios
+def attach_portfolioItems(portfolios):
+    portfolioIds = "" # SQL array
+    tickers = []
     items = []
-    g.cursor.execute("SELECT id, shareCount, avgCost, ticker FROM PortfolioItem WHERE portfolioId = %s",
-                     portfolio['id'])
+
+    # Trying to get "1, 2, 3"
+    for portfolio in portfolios:
+        if portfolioIds == "":
+            portfolioIds = f"{portfolio['id']}"
+        else:
+            portfolioIds = portfolioIds + f", {portfolio['id']}"
+
+        # Also start portfolio[items] with an empty array
+        portfolio['items'] = []
+
+    g.cursor.execute(f'SELECT id, shareCount, avgCost, ticker, portfolioId FROM PortfolioItem WHERE portfolioId IN ({portfolioIds})')
     items = g.cursor.fetchall()
 
     for item in items:
-        item['price'] = stock.getSharePrice(item['ticker'])
-        item['companyName'] = stock.getStockInformation(item['ticker'])['companyName']
+        tickers.append(item['ticker'])
+
+    # Remove duplicate tickers
+    tickers = list(dict.fromkeys(tickers))
+
+    # Only get prices and infos if tickers isn't empty
+    if (len(tickers) > 0):
+        prices = stock.getSharePrices(tickers)
+        infos = stock.getStockInformations(tickers)
+
+    for item in items:
+        item['price'] = prices[item['ticker']]
+        item['companyName'] = infos[item['ticker']]['companyName']
 
         # Calculating gain.
         currentTotal = float(item['price']) * float(item['shareCount'])
         purchasedTotal = float(item['avgCost']) * float(item['shareCount'])
         item['gain'] = currentTotal - purchasedTotal
 
-    portfolio['items'] = items
-
+    for portfolio in portfolios:
+        for item in items:
+            if item['portfolioId'] == portfolio['id']:
+                portfolio['items'].append(item)
+                
 
 def attach_portfolio_value(portfolio):
     value = float(portfolio['buyPower'])
     for item in portfolio['items']:
-        value += float(stock.getSharePrice(item['ticker'])) * item['shareCount']
+        value += float(item['price']) * item['shareCount']
 
     portfolio['value'] = value
 
@@ -121,103 +147,3 @@ def attach_league(portfolio):
     # Stringify dates
     portfolio['league']['start'] = portfolio['league']['start'].strftime('%m-%d-%Y')
     portfolio['league']['end'] = portfolio['league']['end'].strftime('%m-%d-%Y')
-
-# @pVortfolio_api.route('/api/portfolio', methods=['GET'])
-# def get_portfolios():
-#    userId = request.args.get('userId')
-#    leagueId = request.args.get('leagueId')
-
-#    if userId and leagueId:
-#       return make_response(jsonify(error=errors['unsupportedPortfolioGet']), 400)
-
-#    if leagueId:
-#       g.cursor.execute("SELECT p.id, p.buyPower, p.name AS nickname, p.userId, " +
-#          "l.name AS league, l.id AS leagueId, l.start, l.end, l.startPos " +
-#          "FROM Portfolio AS p LEFT JOIN League as l ON p.leagueId = l.id " +
-#          "WHERE l.id = %s", leagueId)
-
-#    elif userId:
-#       g.cursor.execute("SELECT p.id, p.buyPower, p.name AS nickname, p.userId, " +
-#          "l.name AS league, l.id AS leagueId, l.start, l.end, l.startPos " +
-#          "FROM Portfolio AS p LEFT JOIN League as l ON p.leagueId = l.id " +
-#          "WHERE userId = %s", userId)
-#    else:
-#       g.cursor.execute("SELECT p.id, p.buyPower, p.name AS nickname, p.userId, " +
-#          "l.name AS league, l.id AS leagueId, l.start, l.end, l.startPos " +
-#          "FROM Portfolio AS p LEFT JOIN League as l ON p.leagueId = l.id")
-
-#    portfolios = g.cursor.fetchall()
-#    portfoliosWithValues = add_portfolio_values(portfolios)
-
-#    return json.dumps(portfoliosWithValues, default=Utility.dateToStr)
-
-
-# def add_portfolio_values(portfolios):
-#    for portfolio in portfolios:
-#       portfolio['value'] = get_recent_portfolio_value(portfolio['id'])
-
-#    return portfolios
-
-
-# def get_recent_portfolio_value(portfolioId):
-#    g.cursor.execute("SELECT * FROM PortfolioHistory " + 
-#       "WHERE portfolioId = %s ORDER BY datetime DESC LIMIT 1", portfolioId)
-
-#    portfolioValue = g.cursor.fetchone()
-#    if portfolioValue:
-#       return float(portfolioValue['value'])
-#    else:
-#       return -1
-
-
-# @portfolio_api.route('/api/portfolio/<portfolioId>/history/now', methods=['GET'])
-# def get_most_recent_portfolio_value(portfolioId):
-#    return jsonify(value=get_recent_portfolio_value(portfolioId))
-
-
-# @portfolio_api.route('/api/portfolio/<portfolioId>', methods=['GET'])
-# def get_portfolio(portfolioId):
-#    g.cursor.execute("SELECT p.id AS id, ticker, shareCount, avgCost, name, buyPower, leagueId " +
-#       "FROM Portfolio AS p LEFT JOIN PortfolioItem as pi ON p.id = pi.portfolioId " + 
-#       "WHERE p.id = %s", portfolioId)
-
-#    portfolio = g.cursor.fetchall()
-#    portfolioWithValues = add_portfolio_values(portfolio)
-#    return json.dumps(portfolioWithValues)
-
-
-# @portfolio_api.route('/api/portfolio/<portfolioId>/value', methods=['GET'])
-# def get_portfolio_value(portfolioId):
-#    portfolioItems = json.loads(get_portfolio(portfolioId))
-#    value = 0
-#    for item in portfolioItems:
-#       if item['ticker'] is not None:
-#          value += float(json.loads(stock.get_history(item['ticker'], 'now'))['price']) * item['shareCount']
-
-#    return json.dumps({"value": value + float(portfolioItems[0]['buyPower'])})
-
-
-# @portfolio_api.route('/api/portfolio/<portfolioId>/history', methods=['POST'])
-# def post_portfolio_history(portfolioId):
-#    body = request.get_json()
-#    try:
-#       result = PortfolioHistorySchema().load(body)
-#    except ValidationError as err:
-#       return make_response(json.dumps(err.messages), 400)
-
-#    now = datetime.now()
-
-#    g.cursor.execute("INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES (%s, %s, %s)",
-#       [portfolioId, str(now), body['value']])
-
-#    return Response(status=200)
-
-
-# @portfolio_api.route('/api/portfolio/<portfolioId>/history', methods=['GET'])
-# def get_portfolio_history(portfolioId):
-
-#    g.cursor.execute("SELECT value, datetime FROM Portfolio AS p JOIN PortfolioHistory AS ph ON p.id = ph.portfolioId " +
-#       "WHERE portfolioId = %s", portfolioId)
-
-#    portfolio = g.cursor.fetchall()
-#    return json.dumps(portfolio, default=str)
