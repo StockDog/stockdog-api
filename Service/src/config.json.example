@@ -5,5 +5,13 @@
       "user": "",
       "password": ""
    },
-   "iexToken": ""
+   "iexToken": "",
+   "auth": {
+      "google": {
+         "authClientIdExpoIos": "",
+         "authClientIdStandaloneIos": "",
+         "authClientIdExpoAndroid": "",
+         "authClientIdStandaloneAndroid": ""
+      }
+   }
 }

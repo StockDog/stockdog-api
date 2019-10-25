@@ -118,6 +118,7 @@ def validate_body(fields):
          try:
             validate(request.get_json(), fields)
          except ValidationError as e:
+            g.log.error(json.dumps(e.errors));
             return make_response(json.dumps(e.errors), 400)
          
          return fn(*args, **kwargs)

@@ -85,6 +85,10 @@ def attach_portfolioItems(portfolios):
     tickers = []
     items = []
 
+    # Don't do anything if there is no portfolios
+    if len(portfolios) == 0:
+        return;
+
     # Trying to get "1, 2, 3"
     for portfolio in portfolios:
         if portfolioIds == "":

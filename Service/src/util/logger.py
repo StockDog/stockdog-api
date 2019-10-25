@@ -50,10 +50,11 @@ class Logger:
 
    def error(self, msg, isPprint=False):
       if self.isActive:
-         print(Colors.FAIL + "[ERROR]" + Colors.RESTORE)
-         pprint(msg)
-      else:
-         print(Colors.FAIL + "\t[ERROR] : " + msg + Colors.RESTORE)
+         if isPprint:
+            print(Colors.FAIL + "[ERROR]" + Colors.RESTORE)
+            pprint(msg)
+         else:
+            print(Colors.FAIL + "\t[ERROR] : " + msg + Colors.RESTORE)
 
    def verbose(self, msg, isPprint=False):
       if self.isActive and self.isVerbose:

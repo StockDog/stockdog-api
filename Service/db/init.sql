@@ -9,6 +9,8 @@ CREATE TABLE User (
    email VARCHAR(32) UNIQUE,
    password VARCHAR(1024),
    token VARCHAR(1024),
+   sub VARCHAR(64) UNIQUE, -- used for apple and google login
+   type ENUM("apple", "google", "none"),
    dateCreated DATETIME DEFAULT CURRENT_TIMESTAMP,
    dateUpdated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
