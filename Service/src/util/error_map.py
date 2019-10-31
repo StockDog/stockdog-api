@@ -21,5 +21,7 @@ errors = {
    'invalidIexToken': 'The IEX token is invalid',
    'leagueNotFound': 'Given league ID does not exist',
    'tickerNotWatchlisted': 'The provided ticker is not on the watchlist of the given portfolio',
-   'tickerAlreadyInWatchlist': 'The ticker is already watchlisted in this portfolio'
+   'tickerAlreadyInWatchlist': 'The ticker is already watchlisted in this portfolio',
+   'invalidAppTypeOrOs': 'appType must be either expo or standalone and os must be either android or ios',
+   'wrongIssuerGoogle': 'Token iss is not from Google'
 }
