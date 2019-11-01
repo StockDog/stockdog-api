@@ -13,3 +13,10 @@ fields_google = [
    Field('appType', str, True), # Needs to be either expo or standalone
    Field('os', str, True) # Needs to be either ios or android
 ]
+
+fields_apple = [
+   Field('appleIdToken', str, True),
+   Field('appType', str, True),
+   Field('givenName', str, False),
+   Field('familyName', str, False)
+]

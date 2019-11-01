@@ -23,5 +23,6 @@ errors = {
    'tickerNotWatchlisted': 'The provided ticker is not on the watchlist of the given portfolio',
    'tickerAlreadyInWatchlist': 'The ticker is already watchlisted in this portfolio',
    'invalidAppTypeOrOs': 'appType must be either expo or standalone and os must be either android or ios',
-   'wrongIssuerGoogle': 'Token iss is not from Google'
+   'wrongIssuerGoogle': 'Token iss is not from Google',
+   'invalidAppleIdToken': 'There was something wrong with the Apple Id given'
 }

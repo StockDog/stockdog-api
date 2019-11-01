@@ -88,7 +88,10 @@ def validate_headers(f):
    def decorator(*args, **kwargs):
       try:
          errors = []
-         check_headers(errors)
+         # This function check if content-type is application/json no matter what the request it
+         # This does not make sense because get calls with no body do not have content
+         # axios calls in the front end do not like this code law
+         # check_headers(errors)
          if (len(errors) > 0):
             raise ValidationError(errors)
       
