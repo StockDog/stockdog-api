@@ -23,6 +23,7 @@ PyMySQL = "==0.9.3"
 validate_email = "==1.3"
 Werkzeug = "==0.15.5"
 google-api-python-client = "*"
+pyjwt = {extras = ["crypto"],version = "*"}
 
 [requires]
 python_version = "3.7"

@@ -3,6 +3,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import simplejson as json
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
+import requests
+import jwt
+from jwt.algorithms import RSAAlgorithm
+import time
 
 from auth import auth
 from request_validator import validator
@@ -71,36 +75,97 @@ def login_user_google():
    elif body['appType'] == "standalone" and body['os'] == "android":
       clientId = getConfig()['auth']['google']['authClientIdStandaloneAndroid']
    else:
-      make_response(jsonify(error='invalidAppTypeOrOs', message=errors['invalidAppTypeOrOs']), 400)
+      return make_response(jsonify(error='invalidAppTypeOrOs', message=errors['invalidAppTypeOrOs']), 400)
 
    idinfo = id_token.verify_oauth2_token(body['googleIdToken'], google_requests.Request(), clientId)
 
    if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-        make_response(jsonify(error='wrongIssuerGoogle', message=errors['wrongIssuerGoogle']), 400)
+      return make_response(jsonify(error='wrongIssuerGoogle', message=errors['wrongIssuerGoogle']), 400)
 
    # All checks passed, check to see if this user has logged in before
    sub = idinfo['sub']
 
+   user = login_register_sub(idinfo, sub, 'google')
+
+   return jsonify(userId=user['id'], token=user['token'])
+
+   
+@user_api.route('/api/v1.0/users/session/apple', methods=['POST'])
+@validator.validate_body(login_schema.fields_apple)
+def login_user_apple():
+   body = request.get_json()
+
+   # Validate the token is from Apple
+   idinfo = decode_apple_identity_token(body['appleIdToken'], body['appType'])
+
+   if idinfo is None:
+      return make_response(jsonify(error='invalidAppleIdToken', message=errors['invalidAppleIdToken']), 400)
+
+   # All checks passed, check to see if this user has logged in before
+   sub = idinfo['sub']
+   idinfo['family_name'] = body['familyName']
+   idinfo['given_name'] = body['givenName']
+
+   user = login_register_sub(idinfo, sub, 'apple')
+
+   return jsonify(userId=user['id'], token=user['token'])
+
+
+# Will query Apple's servers to get the public key to decode
+# Returns None if something is wrong with the identity token
+def decode_apple_identity_token(token, appType):
+   if appType == 'expo':
+      aud = "host.exp.Exponent"
+   elif appType == 'standalone':
+      aud = "com.stockdogapp"
+   else:
+      g.log.error(f'Not valid appType: {appType}')
+      return None
+
+   # Get public key from Apple
+   raw_response = requests.get('https://appleid.apple.com/auth/keys')
+   if (raw_response.status_code != 200):
+      g.log.error('Failed to key public key from Apple')
+      return None
+   response = raw_response.json()
+
+   public_key = RSAAlgorithm.from_jwk(json.dumps(response['keys'][0]))
+   decoded_jwt = jwt.decode(token, public_key, algorithms='RS256', audience=aud)
+
+   if decoded_jwt['iss'] != 'https://appleid.apple.com':
+      g.log.error('https://appleid.apple.com is not the iss: ' + decoded_jwt['iss'])
+      return None
+
+   if decoded_jwt['aud'] != 'host.exp.Exponent' and decoded_jwt['aud'] != 'com.stockdogapp':
+      g.log.error('aud field does not belong to expo or stockdogapp: ' + decoded_jwt['aud'])
+      return None
+
+   return decoded_jwt
+
+
+# Logs in Apple/Google sub if user does not exist
+# Otherwise registers new user
+# type is either google or apple
+# Returns map of user_id and token
+def login_register_sub(idinfo, sub, type):
    g.cursor.execute("SELECT * FROM User WHERE sub = %s", sub)
    user = g.cursor.fetchone()
 
    # If first time user logging in, create row
    if not user:
       g.cursor.execute("INSERT INTO User(firstName, lastName, email, sub, type) VALUES (%s, %s, %s, %s, %s)",
-      (idinfo['given_name'], idinfo['family_name'], idinfo['email'], sub, "google"))
+      (idinfo['given_name'], idinfo['family_name'], idinfo['email'], sub, type))
 
       # Get the newly inserted user
       g.cursor.execute("SELECT * FROM User WHERE id = %s", g.cursor.lastrowid)
       user = g.cursor.fetchone()
 
    if user['token']:
-      return jsonify(userId=user['id'], token=user['token'])
+      return {'id': user['id'], 'token': user['token']}
 
    token = getUniqueToken()
    g.cursor.execute("UPDATE User SET token = %s WHERE id = %s", [token, user['id']])
-   return jsonify(userId=user['id'], token=token)
-   
-
+   return {'id': user['id'], 'token': token}
 
 @user_api.route('/api/v1.0/users/<userId>/session', methods=['DELETE'])
 @auth.login_required
