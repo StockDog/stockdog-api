@@ -25,9 +25,9 @@ def validate(data, fields):
 def check_headers(errors):
 
    contentTypeHeader = request.headers.get('Content-Type')
-   if contentTypeHeader is None:
+   if request.method != 'GET' and contentTypeHeader is None:
       errors.append({'MissingHeader' : 'Content-Type is a required header'})
-   elif contentTypeHeader and contentTypeHeader != 'application/json':
+   elif request.method != 'GET' and contentTypeHeader and contentTypeHeader != 'application/json':
       errors.append({'InvalidHeader' : 'API only accepts Content-Type of application/json'})
    
    return errors
@@ -108,6 +108,7 @@ def validate_params(fields):
          try:
             validate(request.args, fields)
          except ValidationError as e:
+            g.log.error(json.dumps(e.errors))
             return make_response(json.dumps(e.errors), 400)
          
          return fn(*args, **kwargs)
