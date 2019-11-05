@@ -1,4 +1,3 @@
-import argparse
 from flask import Flask, request, g, Response
 from flask_cors import CORS
 
@@ -52,21 +51,12 @@ def not_found(error):
    return Response('Not Found', status=404)
 
 
-def argParser():
-   parser = argparse.ArgumentParser()
-   parser.add_argument('-p','--port', type=int, help='specify the port number')
-   parser.add_argument('-e', '--environment', type=str, help='specify the environment')
-   args = parser.parse_args()
-   return args
-
-args = argParser()
-
 def getPortNum():
-   return args.port or DEFAULT_PORT_NUM
+   return DEFAULT_PORT_NUM
 
 
 def getEnv():
-   return args.environment or DEFAULT_ENV
+   return DEFAULT_ENV
 
 
 @app.after_request
