@@ -3,8 +3,8 @@ from unittest import TestCase
 import sys
 
 sys.path.append('../')
-from Service.src.util.logger import Logger
-from Service.src.util.db_connection import getDBConn
+from util.logger import Logger
+from util.db_connection import getDBConn
 
 TRAVIS_ENV = 'travis'
 TRAVIS_URL = "http://0.0.0.0:5005/api/v1.0"

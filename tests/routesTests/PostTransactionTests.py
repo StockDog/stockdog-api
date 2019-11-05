@@ -332,4 +332,4 @@ class PostTransactionTests(TestConfiguration):
 
 
    def tearDown(self):
-      self.deleteTables(['Transaction', 'Portfolio', 'User'])
+      self.deleteTables(['Transaction', 'Portfolio', 'User', 'League', 'PortfolioItem'])

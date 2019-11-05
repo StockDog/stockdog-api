@@ -40,26 +40,6 @@ class DeleteSessionTests(TestConfiguration):
       self.headers['Authorization'] = 'token ' + self.token
 
 
-   def test_logout_user_missingContentTypeHeader(self):
-      self.headers.pop('content-type')
-      response = requests.delete(url=self.url, headers=self.headers)
-      responseData = self.getJson(response)
-
-      self.assertEquals(response.status_code, 400)
-      self.assertTrue('MissingHeader' in responseData[0])
-      self.assertEquals(responseData[0]['MissingHeader'], "Content-Type is a required header")
-
-
-   def test_logout_user_invalidContentTypeHeader(self):
-      self.headers['content-type'] = 'plain/text'
-      response = requests.delete(url=self.url, headers=self.headers)
-      responseData = self.getJson(response)
-
-      self.assertEquals(response.status_code, 400)
-      self.assertTrue('InvalidHeader' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of application/json")
-
-
    def test_logout_user(self):
       response = requests.delete(url=self.url, headers=self.headers)     
    

@@ -68,23 +68,6 @@ class GetPortfoliosTests(TestConfiguration):
         self.assertTrue('NotLoggedIn' in responseData)
         self.assertEquals(responseData['NotLoggedIn'], "User must be logged in.")
 
-    def test_getCharts_missingContentTypeHeader(self):
-        self.headers.pop('content-type')
-        response = requests.get(url=self.url, headers=self.headers)
-        responseData = self.getJson(response)
-
-        self.assertEquals(response.status_code, 400)
-        self.assertTrue('MissingHeader' in responseData[0])
-        self.assertEquals(responseData[0]['MissingHeader'], "Content-Type is a required header")
-
-    def test_getCharts_invalidContentTypeHeader(self):
-        self.headers['content-type'] = 'plain/text'
-        response = requests.get(url=self.url, headers=self.headers)
-        responseData = self.getJson(response)
-
-        self.assertEquals(response.status_code, 400)
-        self.assertTrue('InvalidHeader' in responseData[0])
-        self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of application/json")
 
     def test_getPortfolios_havingNoPortfolios(self):
         self.deleteTables(['Portfolio'])
