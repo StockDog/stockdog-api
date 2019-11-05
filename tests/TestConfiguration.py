@@ -18,7 +18,7 @@ class TestConfiguration(TestCase):
    def setUpClass(self):
       self.log = Logger(True, True, True)
       try:
-         self.db = getDBConn(TRAVIS_ENV)
+         self.db = getDBConn()
          self.cursor = self.db.cursor()
       except Exception as e:
          self.log.error(e)

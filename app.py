@@ -33,7 +33,7 @@ def setup():
 
    if getattr(g, 'db', None) is None:
       try:
-         g.db = getDBConn(getEnv())
+         g.db = getDBConn()
          g.cursor = g.db.cursor()
       except Exception as e:
          g.log.error(e)

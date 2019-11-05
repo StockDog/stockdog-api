@@ -1,3 +1,5 @@
+import os
+
 from flask import Blueprint, request, Response, g, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 import simplejson as json
@@ -13,7 +15,6 @@ from request_validator import validator
 from request_validator.schemas import user_schema, login_schema
 from .token_manager import getUniqueToken
 from util.error_map import errors
-from util.config import getConfig
 
 user_api = Blueprint('user_api', __name__)
 
@@ -67,13 +68,13 @@ def login_user_google():
 
    # Validate the token is from Google
    if body['appType'] == "expo" and body['os'] == "ios":
-      clientId = getConfig()['auth']['google']['authClientIdExpoIos']
+      clientId = os.getenv("auth.google.authClientIdExpoIos")
    elif body['appType'] == "standalone" and body['os'] == "ios":
-      clientId = getConfig()['auth']['google']['authClientIdStandaloneIos']
+      clientId = os.getenv("auth.google.authClientIdStandaloneIos")
    elif body['appType'] == "expo" and body['os'] == "android":
-      clientId = getConfig()['authClientIdExpoAndroid']
+      clientId = os.getenv("auth.google.authClientIdExpoAndroid")
    elif body['appType'] == "standalone" and body['os'] == "android":
-      clientId = getConfig()['auth']['google']['authClientIdStandaloneAndroid']
+      clientId = os.getenv("auth.google.authClientIdStandaloneAndroid")
    else:
       return make_response(jsonify(error='invalidAppTypeOrOs', message=errors['invalidAppTypeOrOs']), 400)
 

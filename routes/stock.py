@@ -1,3 +1,5 @@
+import os
+
 from datetime import datetime
 from flask import Blueprint, jsonify, make_response, request, Response, g
 import requests
@@ -8,7 +10,6 @@ from auth import auth
 from request_validator import validator
 from request_validator.schemas import charts_schema
 from util.error_map import errors
-from util.config import getConfig
 
 DAY = '1d'
 MONTH = '1m'
@@ -22,11 +23,6 @@ stock_api = Blueprint('stock_api', __name__)
 
 IEX_URL_PREFIX = 'https://cloud.iexapis.com/v1/stock/'
 
-# This needs to be optimized so it doesn't open and close the config file every time.
-def getIexToken():
-   config = getConfig()
-   return config['iexToken']
-
 @stock_api.route('/api/v1.0/stocks/<ticker>', methods=['GET'])
 @auth.login_required
 def getStock(ticker):
@@ -38,7 +34,7 @@ def getStock(ticker):
    return json.dumps(stockInformation)
 
 def getStockInformation(ticker):
-   requestUrl = f'{IEX_URL_PREFIX}{ticker}/company?token={getIexToken()}'
+   requestUrl = f'{IEX_URL_PREFIX}{ticker}/company?token={os.getenv("iexToken")}'
 
    g.log.info('IEX API hitting: ' + requestUrl)
    startTime = time.time()
@@ -59,7 +55,7 @@ def getStockInformation(ticker):
 # Returns a dict of stock information
 def getStockInformations(tickers):
    tickersDelimited = ','.join(tickers)
-   requestUrl = f'https://cloud.iexapis.com/stable/stock/market/company?symbols={tickersDelimited}&token={getIexToken()}'
+   requestUrl = f'https://cloud.iexapis.com/stable/stock/market/company?symbols={tickersDelimited}&token={os.getenv("iexToken")}'
    
    g.log.info('IEX API hitting: ' + requestUrl)
    startTime = time.time()
@@ -98,7 +94,7 @@ def extract_args(ticker):
 
 def get_history(ticker, length):
    interval = getInterval(length)
-   requestUrl = f'{IEX_URL_PREFIX}{ticker}/chart/{interval}?token={getIexToken()}'
+   requestUrl = f'{IEX_URL_PREFIX}{ticker}/chart/{interval}?token={os.getenv("iexToken")}'
    
    g.log.info('IEX API hitting: ' + requestUrl)
    startTime = time.time()
@@ -122,7 +118,7 @@ def get_history(ticker, length):
    return data
 
 def getSharePrice(ticker):
-   requestUrl = f'{IEX_URL_PREFIX}{ticker}/quote?token={getIexToken()}'
+   requestUrl = f'{IEX_URL_PREFIX}{ticker}/quote?token={os.getenv("iexToken")}'
    g.log.info('IEX API hitting: ' + requestUrl)
    startTime = time.time()
    rawResponse = requests.get(requestUrl)
@@ -142,7 +138,7 @@ def getSharePrice(ticker):
 # Returns a dictionary of stocks and their prices
 def getSharePrices(tickers):
    tickersDelimited = ','.join(tickers)
-   requestUrl = f'https://cloud.iexapis.com/stable/stock/market/quote?symbols={tickersDelimited}&token={getIexToken()}&filter=symbol,latestPrice'
+   requestUrl = f'https://cloud.iexapis.com/stable/stock/market/quote?symbols={tickersDelimited}&token={os.getenv("iexToken")}&filter=symbol,latestPrice'
    g.log.info('IEX API hitting: ' + requestUrl)
    startTime = time.time()
    rawResponse = requests.get(requestUrl)

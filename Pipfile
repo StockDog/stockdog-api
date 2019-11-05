@@ -25,6 +25,7 @@ Werkzeug = "==0.15.5"
 google-api-python-client = "*"
 pyjwt = {extras = ["crypto"],version = "*"}
 gunicorn = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7"
