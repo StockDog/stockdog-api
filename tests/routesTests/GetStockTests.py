@@ -38,6 +38,7 @@ class StockTests(TestConfiguration):
         response = requests.get(url=url, headers=self.headers)
         responseData = self.getJson(response)
         self.assertEqual(responseData['companyName'], "Advanced Micro Devices, Inc.");
+        self.assertTrue('currentPrice' in responseData)
 
     def test_getStock_nonExistent(self):
         url = self.url + 'FUCK'
