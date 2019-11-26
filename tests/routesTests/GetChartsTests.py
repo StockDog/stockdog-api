@@ -23,14 +23,6 @@ class GetChartsTests(TestConfiguration):
       self.headers['Authorization'] = 'token ' + self.token
       self.url = self.base_url + '/stocks'
 
-   def test_getCharts_recent(self):
-      url = self.url + '/AMD/chart?length=recent'
-      response = requests.get(url=url, headers=self.headers)
-      responseData = self.getJson(response)
-      
-      self.assertEquals(response.status_code, 200)
-      self.assertEquals(len(responseData), 1)
-
 
    def test_getCharts_notLoggedIn(self):
       logoutUrl = self.base_url + '/users/' + str(self.user_id) + '/session'
@@ -83,7 +75,7 @@ class GetChartsTests(TestConfiguration):
 
 
    def test_getCharts_day(self):
-      url = self.url + '/MSFT/chart?length=day'
+      url = self.url + '/MSFT/chart?length=week'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
       
@@ -151,14 +143,14 @@ class GetChartsTests(TestConfiguration):
    
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidField' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], "length is not one of 'day', 'week', 'month', 'year', or 'recent'")
+      self.assertEquals(responseData[0]['InvalidField'], "length is not one of 'week', 'month', or 'year'")
 
 
    def test_getCharts_invalidTicker(self):
-      url = self.url + '/FUCK/chart?length=day'
+      url = self.url + '/FUCK/chart?length=week'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
-   
+
       self.assertEquals(response.status_code, 400)
       self.assertTrue('UnsupportedTicker' in responseData)
       self.assertEquals(responseData['UnsupportedTicker'], "The stock ticker is either invalid or unsupported.")

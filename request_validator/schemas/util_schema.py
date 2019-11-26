@@ -40,9 +40,9 @@ def validateName(nameStr, field, errors):
 
 
 def validateLength(lengthStr, field, errors):
-   if type(lengthStr) != str or lengthStr not in ['day', 'week', 'month', 'year', 'recent']:
+   if type(lengthStr) != str or lengthStr not in ['week', 'month', 'year']:
       errors.append({
-         'InvalidField': field.name + " is not one of 'day', 'week', 'month', 'year', or 'recent'"
+         'InvalidField': field.name + " is not one of 'week', 'month', or 'year'"
       })
    
    return errors
