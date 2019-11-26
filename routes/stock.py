@@ -11,7 +11,7 @@ from request_validator import validator
 from request_validator.schemas import charts_schema
 from util.error_map import errors
 
-DAY = '1d'
+WEEK = '5d'
 MONTH = '1m'
 YEAR = '1y'
 
@@ -161,9 +161,9 @@ def getSharePrices(tickers):
    return priceDict
 
 def getInterval(length):
-   if length == 'recent' or length == 'day':
-      return DAY
-   elif length == 'week' or length == 'month':
+   if length == 'week':
+      return WEEK
+   elif length == 'month':
       return MONTH
    elif length == 'year':
       return YEAR
@@ -183,15 +183,9 @@ def formatData(jsonData, interval):
    data.sort(key=lambda item:item['epochTime'], reverse=False)
    return data
 
-# Handles both intra and inter day data
 # Returns a string
 def formatDateTime(data, interval):
-   if (interval == DAY):
-      dateTime = datetime.strptime(data['date'] + ' ' + data['minute'], IEX_DATETIME_FORMAT)
-   else:
-      dateTime = datetime.strptime(data['date'], IEX_DATE_FORMAT)
-
-   return dateTime
+   return datetime.strptime(data['date'], IEX_DATE_FORMAT)
 
 # Expects a requests.HTTPError object
 def handleIexError(error):
