@@ -151,3 +151,14 @@ def attach_league(portfolio):
     # Stringify dates
     portfolio['league']['start'] = portfolio['league']['start'].strftime('%m-%d-%Y')
     portfolio['league']['end'] = portfolio['league']['end'].strftime('%m-%d-%Y')
+
+
+def attach_portfolio_history(portfolio):
+    g.cursor.execute("SELECT * WHERE leagueId=%s AND userId=%s", portfolio['leagueId'], portfolio['userId'])
+    portfolio_history = g.cursor.fetchall()
+
+    # Stringify dates
+    for item in portfolio_history:
+        item['dateCreated'] = item['dateCreated'].strftime('%m-%d-%Y')
+
+    portfolio['history'] = portfolio_history
