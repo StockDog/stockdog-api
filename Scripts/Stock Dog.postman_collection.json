@@ -999,6 +999,71 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Get calls",
+			"item": [
+				{
+					"name": "ash get amd week",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "token {{userAshToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/stocks/amd/chart?length=week&=",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"stocks",
+								"amd",
+								"chart"
+							],
+							"query": [
+								{
+									"key": "length",
+									"value": "week"
+								},
+								{
+									"key": "",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ash get amd info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "token {{userAshToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/stocks/amd",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"stocks",
+								"amd"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	]
 }
