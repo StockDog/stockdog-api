@@ -28,6 +28,7 @@ IEX_URL_PREFIX = 'https://cloud.iexapis.com/v1/stock/'
 def getStock(ticker):
    try:
       stockInformation = getStockInformation(ticker)
+      stockInformation['currentPrice'] = getSharePrice(ticker)
    except requests.HTTPError as e:
       return handleIexError(e)
 

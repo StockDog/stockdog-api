@@ -134,14 +134,14 @@ class GetChartsTests(TestConfiguration):
    
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidField' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidField'], "length is not one of 'day', 'week', 'month', 'year', or 'recent'")
+      self.assertEquals(responseData[0]['InvalidField'], "length is not one of 'week', 'month', or 'year'")
 
 
    def test_getCharts_invalidTicker(self):
-      url = self.url + '/FUCK/chart?length=day'
+      url = self.url + '/FUCK/chart?length=week'
       response = requests.get(url=url, headers=self.headers)
       responseData = self.getJson(response)
-   
+
       self.assertEquals(response.status_code, 400)
       self.assertTrue('UnsupportedTicker' in responseData)
       self.assertEquals(responseData['UnsupportedTicker'], "The stock ticker is either invalid or unsupported.")
