@@ -1,6 +1,11 @@
-DROP DATABASE IF EXISTS ubkklfvaeg33j91i;
-CREATE DATABASE ubkklfvaeg33j91i;
-USE ubkklfvaeg33j91i;
+-- DROP DATABASE IF EXISTS ubkklfvaeg33j91i;
+-- CREATE DATABASE ubkklfvaeg33j91i;
+-- USE ubkklfvaeg33j91i;
+
+-- Local dev
+DROP DATABASE IF EXISTS StockDog;
+CREATE DATABASE StockDog;
+USE StockDog;
 
 CREATE TABLE User (
    id INT(11) AUTO_INCREMENT PRIMARY KEY,
@@ -30,7 +35,7 @@ CREATE TABLE Portfolio (
 CREATE TABLE Ticker (
    id INT(11) AUTO_INCREMENT PRIMARY KEY,
    symbol VARCHAR(8),
-   company VARCHAR(32)
+   company VARCHAR(64)
 );
 
 
@@ -3598,15 +3603,3 @@ INSERT INTO Ticker(symbol,company) values("ZUMZ","Zumiez Inc.");
 INSERT INTO Ticker(symbol,company) values("ZYNE","Zynerba Pharmaceuticals, Inc.");
 INSERT INTO Ticker(symbol,company) values("ZYXI","Zynex, Inc.");
 INSERT INTO Ticker(symbol,company) values("ZNGA","Zynga Inc.");
-
-INSERT INTO User(firstName,lastName,email,password,token) values("Kathiravan","Tamilvanan","kathir@gmail.com","123456","afasdfasdfasdasdf");
-
-INSERT INTO League (  name, start, end, startPos, inviteCode, ownerId) VALUES("BIGB",NOW(),NOW(),100.00,"BIGB",1);
-
-INSERT INTO Portfolio(buyPower,name,userId,leagueId) VALUES(1049.00,"P1",1,1);
-
-INSERT INTO PortfolioItem (shareCount,avgCost,portfolioId,ticker) VALUES(100,120.00,1,"INTU");
-INSERT INTO PortfolioItem (shareCount,avgCost,portfolioId,ticker) VALUES(100,180.00,1,"AAPL");
-INSERT INTO PortfolioItem (shareCount,avgCost,portfolioId,ticker) VALUES(100,5.00,1,"GPRO");
-INSERT INTO PortfolioItem (shareCount,avgCost,portfolioId,ticker) VALUES(100,51.00,1,"LYFT");
-INSERT INTO PortfolioItem (shareCount,avgCost,portfolioId,ticker) VALUES(100,100.00,1,"ESTC");
