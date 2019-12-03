@@ -36,6 +36,16 @@ class GetPortfoliosTests(TestConfiguration):
         self.invite_code = league_data['inviteCode']
         self.user_id = login_data['userId']
 
+        # Adding PortfolioHistory stuff manually
+        self.cursor.execute('INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES(%s, DATE_SUB(CURDATE(), INTERVAL 2 DAY), %s)',
+            (portfolio_data['id'], 2950))
+
+        self.cursor.execute('INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES(%s, DATE_SUB(CURDATE(), INTERVAL 1 DAY), %s)',
+            (portfolio_data['id'], 3000))
+
+        self.cursor.execute('INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES(%s, NOW(), %s)',
+            (portfolio_data['id'], 3010))
+
     def test_getPortfolios(self):
         response = requests.get(url=self.url, headers=self.headers)
         responseData = self.getJson(response)
@@ -55,6 +65,16 @@ class GetPortfoliosTests(TestConfiguration):
         self.assertEquals(responseData[0]['league']['startPos'], 5000)
         self.assertTrue('start' in responseData[0]['league'])
         self.assertTrue('end' in responseData[0]['league'])
+
+        # PortfolioHistory testing
+        self.assertTrue('history' in responseData[0])
+        self.assertEquals(len(responseData[0]['history']), 3)
+        self.assertEquals(responseData[0]['history'][0]['datetime'], "11-29-2019")
+        self.assertEquals(responseData[0]['history'][0]['value'], 2950.00)
+        self.assertEquals(responseData[0]['history'][1]['datetime'], "11-30-2019")
+        self.assertEquals(responseData[0]['history'][1]['value'], 3000.00)
+        self.assertEquals(responseData[0]['history'][2]['datetime'], "12-01-2019")
+        self.assertEquals(responseData[0]['history'][2]['value'], 3010.00)
 
     def test_getPortfolios_notLoggedIn(self):
         logoutUrl = self.base_url + '/users/' + str(self.user_id) + '/session'
@@ -152,4 +172,4 @@ class GetPortfoliosTests(TestConfiguration):
         self.assertTrue(responseData[0]['items'][0]['price'] > 0)
 
     def tearDown(self):
-        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League'])
+        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League', 'PortfolioHistory'])

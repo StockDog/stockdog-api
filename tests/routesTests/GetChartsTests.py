@@ -72,16 +72,7 @@ class GetChartsTests(TestConfiguration):
       self.assertEquals(response.status_code, 401)
       self.assertTrue('NotLoggedIn' in responseData)
       self.assertEquals(responseData['NotLoggedIn'], "User must be logged in.")
-
-
-   def test_getCharts_day(self):
-      url = self.url + '/MSFT/chart?length=week'
-      response = requests.get(url=url, headers=self.headers)
-      responseData = self.getJson(response)
       
-      self.assertEquals(response.status_code, 200)
-      self.assertTrue(len(responseData) > 1)
-   
 
    def test_getCharts_week(self):
       url = self.url + '/TSLA/chart?length=week'

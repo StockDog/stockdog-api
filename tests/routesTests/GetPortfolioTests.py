@@ -35,6 +35,16 @@ class GetPortfolioTests(TestConfiguration):
         self.url = self.base_url + '/portfolios'
         self.userId = login_data['userId']
 
+        # Adding PortfolioHistory stuff manually
+        self.cursor.execute('INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES(%s, DATE_SUB(CURDATE(), INTERVAL 2 DAY), %s)',
+            (portfolio_data['id'], 2950))
+
+        self.cursor.execute('INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES(%s, DATE_SUB(CURDATE(), INTERVAL 1 DAY), %s)',
+            (portfolio_data['id'], 3000))
+
+        self.cursor.execute('INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES(%s, NOW(), %s)',
+            (portfolio_data['id'], 3010))
+
     def test_getPortfolio_havingNoPortfolioItems(self):
         url = self.url + '/' + str(self.portfolioId)
         response = requests.get(url=url, headers=self.headers)
@@ -100,6 +110,16 @@ class GetPortfolioTests(TestConfiguration):
         self.assertTrue('start' in responseData['league'])
         self.assertTrue('end' in responseData['league'])
 
+        # PortfolioHistory testing
+        self.assertTrue('history' in responseData)
+        self.assertEquals(len(responseData['history']), 3)
+        self.assertEquals(responseData['history'][0]['datetime'], "11-29-2019")
+        self.assertEquals(responseData['history'][0]['value'], 2950.00)
+        self.assertEquals(responseData['history'][1]['datetime'], "11-30-2019")
+        self.assertEquals(responseData['history'][1]['value'], 3000.00)
+        self.assertEquals(responseData['history'][2]['datetime'], "12-01-2019")
+        self.assertEquals(responseData['history'][2]['value'], 3010.00)
+
     def test_getPortfolio_notLoggedIn(self):
         logoutUrl = self.base_url + '/users/' + str(self.userId) + '/session'
         logoutResponse = requests.delete(url=logoutUrl, headers=self.headers)
@@ -156,4 +176,4 @@ class GetPortfolioTests(TestConfiguration):
         self.assertEqual(response.status_code, 403)
 
     def tearDown(self):
-        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League'])
+        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League', 'PortfolioHistory'])

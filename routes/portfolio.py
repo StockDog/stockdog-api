@@ -54,6 +54,7 @@ def get_portfolios():
     for portfolio in portfolios:
         attach_portfolio_value(portfolio)
         attach_league(portfolio)
+        attach_portfolio_history(portfolio)
 
     return json.dumps(portfolios)
 
@@ -75,6 +76,7 @@ def get_portfolio(portfolioId):
     attach_portfolioItems([portfolio])
     attach_portfolio_value(portfolio)
     attach_league(portfolio)
+    attach_portfolio_history(portfolio)
 
 
     return json.dumps(portfolio)
@@ -151,3 +153,15 @@ def attach_league(portfolio):
     # Stringify dates
     portfolio['league']['start'] = portfolio['league']['start'].strftime('%m-%d-%Y')
     portfolio['league']['end'] = portfolio['league']['end'].strftime('%m-%d-%Y')
+
+
+def attach_portfolio_history(portfolio):
+    g.cursor.execute("SELECT id, portfolioId, datetime, value FROM PortfolioHistory WHERE portfolioId=%s",
+        (portfolio['id']))
+    portfolio_history = g.cursor.fetchall()
+
+    # Stringify dates
+    for item in portfolio_history:
+        item['datetime'] = item['datetime'].strftime('%m-%d-%Y')
+
+    portfolio['history'] = portfolio_history
