@@ -1,6 +1,7 @@
 import json
 import requests
 from unittest import main
+from datetime import datetime, timedelta
 
 from TestConfiguration import TestConfiguration
 
@@ -113,11 +114,11 @@ class GetPortfolioTests(TestConfiguration):
         # PortfolioHistory testing
         self.assertTrue('history' in responseData)
         self.assertEquals(len(responseData['history']), 3)
-        self.assertEquals(responseData['history'][0]['datetime'], "11-29-2019")
+        self.assertEquals(responseData['history'][0]['datetime'], datetime.date(datetime.now() - timedelta(2)).strftime('%m-%d-%Y'))
         self.assertEquals(responseData['history'][0]['value'], 2950.00)
-        self.assertEquals(responseData['history'][1]['datetime'], "11-30-2019")
+        self.assertEquals(responseData['history'][1]['datetime'], datetime.date(datetime.now() - timedelta(1)).strftime('%m-%d-%Y'))
         self.assertEquals(responseData['history'][1]['value'], 3000.00)
-        self.assertEquals(responseData['history'][2]['datetime'], "12-01-2019")
+        self.assertEquals(responseData['history'][2]['datetime'], datetime.date(datetime.now()).strftime('%m-%d-%Y'))
         self.assertEquals(responseData['history'][2]['value'], 3010.00)
 
     def test_getPortfolio_notLoggedIn(self):
