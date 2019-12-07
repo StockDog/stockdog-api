@@ -75,8 +75,8 @@ def validateAction(action, field, errors):
 
 def validateDate(dateStr, field, errors):
    try:
-      date = datetime.strptime(dateStr, DATE_FORMAT)
-      today = datetime.now()
+      date = datetime.date(datetime.strptime(dateStr, DATE_FORMAT))
+      today = datetime.date(datetime.now())
       if (date < today):
          errors.append({
             'InvalidField': field.name + " date can't be in the past"
