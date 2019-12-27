@@ -74,4 +74,4 @@ class GetWatchlistTests(TestConfiguration):
         self.assertEquals(res.status_code, 403)
 
     def tearDown(self):
-        self.deleteTables(['League', 'User', 'Portfolio', 'Watchlist'])
+        self.deleteTables(['League', 'User', 'Portfolio', 'Watchlist', 'PortfolioHistory'])

@@ -47,4 +47,4 @@ class StockTests(TestConfiguration):
         self.assertEqual(responseData['UnsupportedTicker'], "The stock ticker is either invalid or unsupported.");
 
     def tearDown(self):
-        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League'])
+        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League', 'PortfolioHistory'])

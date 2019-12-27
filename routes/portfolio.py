@@ -31,6 +31,12 @@ def post_portfolio():
         g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId, leagueId) VALUES (%s, %s, %s, %s)",
                          [body['name'], league['startPos'], g.user['id'], league['id']])
 
+        portfolio_id = g.cursor.lastrowid
+
+        # Add initial portfolio history point
+        g.cursor.execute("INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES (%s, NOW(), %s)",
+                         [portfolio_id, league['startPos']])
+
         return jsonify(id=g.cursor.lastrowid, buyPower=league['startPos'], leagueId=league['id'],
                        leagueName=league['name'])
 

@@ -105,4 +105,4 @@ class GetLeagueInviteCodesTests(TestConfiguration):
         self.assertEquals(data[3]['inviteCode'], 'jkl')
 
     def tearDown(self):
-        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League'])
+        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League', 'PortfolioHistory'])
