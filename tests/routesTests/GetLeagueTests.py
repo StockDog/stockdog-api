@@ -58,4 +58,4 @@ class GetLeagueTests(TestConfiguration):
         self.assertEquals(response.status_code, 404)
 
     def tearDown(self):
-        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League'])
+        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League', 'PortfolioHistory'])

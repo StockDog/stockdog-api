@@ -109,4 +109,4 @@ class PostWatchlistTests(TestConfiguration):
         self.assertEquals(response.status_code, 400)
 
     def tearDown(self):
-        self.deleteTables(['League', 'User', 'Portfolio', 'Watchlist'])
+        self.deleteTables(['League', 'User', 'Portfolio', 'Watchlist', 'PortfolioHistory'])

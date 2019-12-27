@@ -58,6 +58,16 @@ class PostPortfolioTests(TestConfiguration):
         self.assertTrue('leagueName' in responseData)
         self.assertEquals(responseData['leagueName'], "test-league")
 
+        init_buy_power = responseData['buyPower']
+
+        # Makes sure that the portfolio history is included
+        # This depends on the portfolio GET requests
+        response = requests.get(url=self.url + '/' + str(responseData['id']), headers=self.headers)
+        responseData = self.getJson(response)
+
+        self.assertEquals(len(responseData['history']), 1)
+        self.assertEquals(responseData['history'][0]['value'], responseData['buyPower'])
+
     def test_post_portfolio_joinLeagueWithDifferentBuyPower(self):
         body = {
             'name': 'techtothemoon',
@@ -239,7 +249,7 @@ class PostPortfolioTests(TestConfiguration):
                           'buyPower must be an integer greater than 1 and less than 1000000')
 
     def tearDown(self):
-        self.deleteTables(['League', 'Portfolio', 'User'])
+        self.deleteTables(['League', 'Portfolio', 'User', 'PortfolioHistory'])
 
     if __name__ == "__main__":
         main()
