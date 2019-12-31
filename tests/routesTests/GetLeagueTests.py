@@ -32,6 +32,7 @@ class GetLeagueTests(TestConfiguration):
         self.assertEquals(portfolio_data['buyPower'], 5000)
 
         self.portfolioId = portfolio_data['id']
+        self.invite_code = league_data['inviteCode']
         self.url = self.base_url + '/portfolios'
 
     def test_get_league(self):
@@ -49,6 +50,8 @@ class GetLeagueTests(TestConfiguration):
         self.assertEquals(responseData["portfolios"][0]["id"], 1)
         self.assertEquals(responseData["portfolios"][0]["name"], "mynewportfolio")
         self.assertEquals(type(responseData["portfolios"][0]["value"]), float)
+        self.assertEquals(responseData["inviteCode"], self.invite_code)
+        self.assertIsNotNone(responseData['status'])
 
     def test_get_league_non_existant_id(self):
         response = requests.get(url=f"{self.base_url}/leagues/2",

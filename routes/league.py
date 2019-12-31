@@ -65,6 +65,8 @@ def get_league(league_id):
         startPos=league_info["startPos"],
         start=league_info["start"],
         end=league_info["end"],
+        inviteCode=league_info['inviteCode'],
+        status=get_league_status(league_info['start'], league_info['end']),
         portfolios=portfolios
     )
 
