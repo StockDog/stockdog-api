@@ -130,8 +130,16 @@ def decode_apple_identity_token(token, appType):
       return None
    response = raw_response.json()
 
-   public_key = RSAAlgorithm.from_jwk(json.dumps(response['keys'][0]))
-   decoded_jwt = jwt.decode(token, public_key, algorithms='RS256', audience=aud)
+   # Apple has multiple keys so we find the kid and match it with the key
+   token_headers = jwt.get_unverified_header(token)
+   public_keys = response['keys']
+
+   for key in public_keys:
+      if key["kid"] == token_headers["kid"]:
+         correct_key = RSAAlgorithm.from_jwk(json.dumps(key))
+         break
+
+   decoded_jwt = jwt.decode(token, correct_key, algorithms='RS256', audience=aud)
 
    if decoded_jwt['iss'] != 'https://appleid.apple.com':
       g.log.error('https://appleid.apple.com is not the iss: ' + decoded_jwt['iss'])
