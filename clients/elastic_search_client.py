@@ -1,6 +1,7 @@
 import elasticsearch
 import os
 from flask import g
+import json 
 
 def get_stocks_info(tickers):
     client = elasticsearch.Elasticsearch(hosts=[os.getenv("elasticsearch.host")])
@@ -12,6 +13,6 @@ def get_stocks_info(tickers):
         stocks[hit["_source"]["Symbol"]] = hit["_source"]
 
     g.log.info(f'Retrieved {[tickers]} from ElasticSearch')
-    g.log.info(stocks)
+    g.log.info(json.dumps(stocks))
 
     return stocks
