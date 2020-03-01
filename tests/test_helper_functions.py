@@ -30,8 +30,8 @@ def create_league(base_url, headers):
     post_league_body = {
         "name": 'test-league',
         "startPos": 5000,
-        "start": '01-15-2020',
-        "end": '02-15-2020'
+        "start": '01-15-2021',
+        "end": '02-15-2021'
     }
     league_response = requests.post(url=league_base_url,
                                     data=json.dumps(post_league_body), headers=headers)
