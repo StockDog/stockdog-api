@@ -10,6 +10,7 @@ from auth import auth
 from request_validator import validator
 from request_validator.schemas import charts_schema
 from util.error_map import errors
+from clients.elastic_search_client import get_stocks_info
 
 WEEK = '5d'
 MONTH = '1m'
@@ -26,58 +27,21 @@ IEX_URL_PREFIX = 'https://cloud.iexapis.com/v1/stock/'
 @stock_api.route('/api/v1.0/stocks/<ticker>', methods=['GET'])
 @auth.login_required
 def getStock(ticker):
-   try:
-      stockInformation = getStockInformation(ticker)
-      stockInformation['currentPrice'] = getSharePrice(ticker)
-   except requests.HTTPError as e:
-      return handleIexError(e)
+   upper_ticker = ticker.upper()
 
-   return json.dumps(stockInformation)
+   stocks_information = get_stocks_info([upper_ticker])
 
-def getStockInformation(ticker):
-   requestUrl = f'{IEX_URL_PREFIX}{ticker}/company?token={os.getenv("iexToken")}'
-
-   g.log.info('IEX API hitting: ' + requestUrl)
-   startTime = time.time()
-   rawResponse = requests.get(requestUrl)
-   iexTime = time.time() - startTime
-
-   if (rawResponse.status_code != 200):
-      rawResponse.raise_for_status()
-
-   response = rawResponse.json()
-
-   parseTime = time.time() - startTime
-   g.log.info('IEX time is: ' + str(iexTime))
-   g.log.info('Parsing data time is: ' + str(parseTime))
-
-   return response
-
-# Returns a dict of stock information
-def getStockInformations(tickers):
-   tickersDelimited = ','.join(tickers)
-   requestUrl = f'https://cloud.iexapis.com/stable/stock/market/company?symbols={tickersDelimited}&token={os.getenv("iexToken")}'
+    # Raise error if ticker was not found
+   if upper_ticker not in stocks_information:
+      return make_response(jsonify(UnsupportedTicker=errors['unsupportedTicker']), 400)
    
-   g.log.info('IEX API hitting: ' + requestUrl)
-   startTime = time.time()
-   rawResponse = requests.get(requestUrl)
-   iexTime = time.time() - startTime
+   stock_information = stocks_information[upper_ticker]
+   # Changing name to companyName for api docs consistancy
+   stock_information["companyName"] = stock_information["Name"]
+   del stock_information["Name"]
+   stock_information['currentPrice'] = getSharePrice(ticker)
 
-   if (rawResponse.status_code != 200):
-      rawResponse.raise_for_status()
-
-   response = rawResponse.json()
-
-   # Converting to dictionary because it is better
-   infoDict = {}
-   for stock in response:
-      infoDict[stock['symbol']] = stock
-
-   parseTime = time.time() - startTime
-   g.log.info('IEX time is: ' + str(iexTime))
-   g.log.info('Parsing data time is: ' + str(parseTime))
-
-   return infoDict
+   return json.dumps(stock_information)
 
 @stock_api.route('/api/v1.0/stocks/<ticker>/chart', methods=['GET'])
 @auth.login_required

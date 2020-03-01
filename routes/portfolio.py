@@ -8,6 +8,7 @@ from request_validator import validator
 from request_validator.schemas import portfolio_post_schema, portfolio_get_schema
 from util.utility import Utility
 from util.error_map import errors
+from clients.elastic_search_client import get_stocks_info
 
 portfolio_api = Blueprint('portfolio_api', __name__)
 
@@ -119,11 +120,11 @@ def attach_portfolioItems(portfolios):
     # Only get prices and infos if tickers isn't empty
     if (len(tickers) > 0):
         prices = stock.getSharePrices(tickers)
-        infos = stock.getStockInformations(tickers)
+        infos = get_stocks_info(tickers)
 
     for item in items:
         item['price'] = prices[item['ticker']]
-        item['companyName'] = infos[item['ticker']]['companyName']
+        item['companyName'] = infos[item['ticker']]['Name']
 
         # Calculating gain.
         currentTotal = float(item['price']) * float(item['shareCount'])
