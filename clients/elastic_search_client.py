@@ -1,5 +1,6 @@
 import elasticsearch
 import os
+from flask import g
 
 def get_stocks_info(tickers):
     client = elasticsearch.Elasticsearch(hosts=[os.getenv("elasticsearch.host")])
