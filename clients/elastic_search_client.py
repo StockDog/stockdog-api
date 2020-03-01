@@ -12,7 +12,7 @@ def get_stocks_info(tickers):
     for hit in response["hits"]["hits"]:
         stocks[hit["_source"]["Symbol"]] = hit["_source"]
 
-    g.log.info(f'Retrieved {[tickers]} from ElasticSearch')
+    g.log.info(f'Retrieved {tickers} from ElasticSearch')
     g.log.info(json.dumps(stocks))
 
     return stocks
