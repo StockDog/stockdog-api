@@ -26,6 +26,7 @@ google-api-python-client = "*"
 pyjwt = {extras = ["crypto"],version = "*"}
 gunicorn = "*"
 python-dotenv = "*"
+elasticsearch = "*"
 
 [requires]
 python_version = "3"
