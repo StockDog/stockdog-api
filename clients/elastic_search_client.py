@@ -6,7 +6,7 @@ import json
 def get_stocks_info(tickers):
     client = elasticsearch.Elasticsearch(hosts=[os.getenv("elasticsearch.host")])
 
-    response = client.search({ "query": {"terms": {"Symbol.keyword": tickers}}})
+    response = client.search({ "size": 10000, "query": {"terms": {"Symbol.keyword": tickers}}})
 
     stocks = {}
     for hit in response["hits"]["hits"]:
