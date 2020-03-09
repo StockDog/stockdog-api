@@ -29,7 +29,7 @@ def post_portfolio():
         if league is None:
             return make_response(jsonify(InviteCodeMismatch=errors['inviteCodeMismatch']), 400)
 
-        g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId, leagueId) VALUES (%s, %s, %s, %s)",
+        g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId, leagueId, deleted) VALUES (%s, %s, %s, %s, 0)",
                          [body['name'], league['startPos'], g.user['id'], league['id']])
 
         portfolio_id = g.cursor.lastrowid
@@ -42,10 +42,23 @@ def post_portfolio():
                        leagueName=league['name'])
 
     else:
-        g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId) VALUES (%s, %s, %s)",
+        g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId, deleted) VALUES (%s, %s, %s, 0)",
                          [body['name'], buyPower, g.user['id']])
 
         return jsonify(id=g.cursor.lastrowid, buyPower=buyPower)
+
+
+@portfolio_api.route('/api/v1.0/portfolios/<portfolio_id>', methods=['DELETE'])
+@auth.login_required
+@validator.validate_headers
+def delete_portfolio(portfolio_id):
+    if not auth.portfolio_belongsTo_user(portfolio_id):
+        return Response(status=403)
+
+    g.cursor.execute("UPDATE Portfolio SET deleted=1 WHERE id=%s", [portfolio_id])
+
+    g.log.info("Deleted portfolio: " + portfolio_id)
+    return Response(status=200)
 
 
 @portfolio_api.route('/api/v1.0/portfolios', methods=['GET'])
@@ -53,7 +66,7 @@ def post_portfolio():
 @validator.validate_params(portfolio_get_schema.fields)
 def get_portfolios():
     g.cursor.execute("SELECT id, buyPower, name, userId, leagueId FROM Portfolio " +
-                     "WHERE userId = %s", g.user['id'])
+                     "WHERE userId = %s AND deleted = 0", g.user['id'])
 
     portfolios = g.cursor.fetchall()
 
@@ -74,7 +87,7 @@ def get_portfolio(portfolioId):
         return Response(status=403)
 
     g.cursor.execute("SELECT id, buyPower, name, userId, leagueId FROM Portfolio " +
-                     "WHERE id = %s", portfolioId)
+                     "WHERE id = %s AND deleted = 0", portfolioId)
 
     portfolio = g.cursor.fetchone()
     if portfolio is None:
@@ -146,6 +159,7 @@ def attach_portfolio_value(portfolio):
 
 
 def attach_league(portfolio):
+    print(portfolio)
     g.cursor.execute("SELECT id, name, startPos, start, end FROM League WHERE id=%s", portfolio['leagueId'])
     league_info = g.cursor.fetchone()
 
