@@ -26,6 +26,7 @@ def post_user():
    g.cursor.execute("SELECT * FROM User WHERE email = %s", body['email'])
    sameEmailusers = g.cursor.fetchall()
    if len(sameEmailusers) > 0:
+      g.log.error(errors['duplicateEmail'])
       return make_response(jsonify(DuplicateEmail=errors['duplicateEmail']), 400)
 
    passwordHash = generate_password_hash(body['password'])
