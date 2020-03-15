@@ -314,4 +314,4 @@ class PostLeagueTests(TestConfiguration):
         self.assertEqual(responseData['startPos'], 10000)
 
     def tearDown(self):
-        self.deleteTables(['League', 'User'])
+        self.deleteTables(['League', 'User', 'Portfolio'])

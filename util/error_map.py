@@ -24,5 +24,6 @@ errors = {
    'tickerAlreadyInWatchlist': 'The ticker is already watchlisted in this portfolio',
    'invalidAppTypeOrOs': 'appType must be either expo or standalone and os must be either android or ios',
    'wrongIssuerGoogle': 'Token iss is not from Google',
-   'invalidAppleIdToken': 'There was something wrong with the Apple Id given'
+   'invalidAppleIdToken': 'There was something wrong with the Apple Id given',
+   'duplicatePortfolio': 'There is a portfolio already registered to the user in the given league'
 }

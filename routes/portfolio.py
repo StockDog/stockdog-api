@@ -29,6 +29,14 @@ def post_portfolio():
         if league is None:
             return make_response(jsonify(InviteCodeMismatch=errors['inviteCodeMismatch']), 400)
 
+        # Make sure this user doesn't already have a portfolio in the league (even if it has been deleted)
+        g.cursor.execute("SELECT * FROM Portfolio WHERE userId=%s AND leagueId=%s", [g.user["id"], league["id"]])
+        existing_portfolios = g.cursor.fetchall()
+        if len(existing_portfolios) > 0:
+            g.log.error(errors["duplicatePortfolio"])
+            return make_response(jsonify(error=errors["duplicatePortfolio"]), 403)
+
+
         g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId, leagueId, deleted) VALUES (%s, %s, %s, %s, 0)",
                          [body['name'], league['startPos'], g.user['id'], league['id']])
 
@@ -159,7 +167,6 @@ def attach_portfolio_value(portfolio):
 
 
 def attach_league(portfolio):
-    print(portfolio)
     g.cursor.execute("SELECT id, name, startPos, start, end FROM League WHERE id=%s", portfolio['leagueId'])
     league_info = g.cursor.fetchone()
 

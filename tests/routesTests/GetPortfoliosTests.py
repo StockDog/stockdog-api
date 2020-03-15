@@ -100,9 +100,14 @@ class GetPortfoliosTests(TestConfiguration):
         self.assertEquals(len(responseData), 0)
 
     def test_getPortfolios_multiplePortfolios(self):
+        league_data = create_league(self.base_url, self.headers)
+        self.assertIsNotNone(league_data['id'])
+        self.assertIsNotNone(league_data['inviteCode'])
+        self.assertIsNotNone(league_data['startPos'])
+
         portfolioBody = {
             'name': 'myothernewportfolio',
-            'inviteCode': self.invite_code
+            'inviteCode': league_data['inviteCode']
         }
 
         portfolioResponse = requests.post(url=self.url, data=json.dumps(portfolioBody), headers=self.headers)

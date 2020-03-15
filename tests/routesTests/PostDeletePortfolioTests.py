@@ -25,12 +25,6 @@ class PostDeletePortfolioTests(TestConfiguration):
         self.assertIsNotNone(league_data['inviteCode'])
         self.assertIsNotNone(league_data['startPos'])
 
-        portfolio_data = create_portfolio(self.base_url, self.headers, league_data['inviteCode'])
-        self.assertTrue('id' in portfolio_data)
-        self.assertTrue(portfolio_data['id'] > 0)
-        self.assertTrue('buyPower' in portfolio_data)
-        self.assertEquals(portfolio_data['buyPower'], 5000)
-
         self.user_id = login_data['userId']
 
         self.league_id = league_data['id']
@@ -68,23 +62,35 @@ class PostDeletePortfolioTests(TestConfiguration):
         self.assertEquals(len(responseData['history']), 1)
         self.assertEquals(responseData['history'][0]['value'], responseData['buyPower'])
 
-    def test_post_portfolio_joinLeague(self):
+    def test_post_portfolio_multiple_same_league(self):
         resP1 = requests.post(url=self.url, data=json.dumps({"name": 'p1', 'inviteCode': self.invite_code}),
-            headers=self.headers)
+                              headers=self.headers)
         self.assertEquals(resP1.status_code, 200)
 
         resP2 = requests.post(url=self.url, data=json.dumps({"name": 'p2', 'inviteCode': self.invite_code}),
+                              headers=self.headers)
+        self.assertEquals(resP2.status_code, 403)
+
+    def test_post_portfolio_joinLeague(self):
+        league_data_1 = create_league(self.base_url, self.headers)
+        league_data_2 = create_league(self.base_url, self.headers)
+        league_data_3 = create_league(self.base_url, self.headers)
+
+        resP1 = requests.post(url=self.url, data=json.dumps({"name": 'p1', 'inviteCode': league_data_1['inviteCode']}),
+            headers=self.headers)
+        self.assertEquals(resP1.status_code, 200)
+
+        resP2 = requests.post(url=self.url, data=json.dumps({"name": 'p2', 'inviteCode': league_data_2['inviteCode']}),
             headers=self.headers)
         self.assertEquals(resP2.status_code, 200)
 
-        resP3 = requests.post(url=self.url, data=json.dumps({"name": 'p3', 'inviteCode': self.invite_code}),
+        resP3 = requests.post(url=self.url, data=json.dumps({"name": 'p3', 'inviteCode': league_data_3['inviteCode']}),
             headers=self.headers)
         self.assertEquals(resP3.status_code, 200)
 
         resGet = requests.get(url=self.url, headers=self.headers)
         resGetData = self.getJson(resGet)
-        # 4 because one was created in the setup of the tests
-        self.assertEquals(len(resGetData), 4)
+        self.assertEquals(len(resGetData), 3)
 
         # Now do the delete
         resDel = requests.delete(url=self.url + "/" + str(self.getJson(resP2)["id"]), headers=self.headers)
@@ -93,9 +99,9 @@ class PostDeletePortfolioTests(TestConfiguration):
         resGet = requests.get(url=self.url, headers=self.headers)
         resGetData = self.getJson(resGet)
 
-        self.assertEquals(len(resGetData), 3)
-        self.assertEquals(resGetData[1]["id"], self.getJson(resP1)["id"])
-        self.assertEquals(resGetData[2]["id"], self.getJson(resP3)["id"])
+        self.assertEquals(len(resGetData), 2)
+        self.assertEquals(resGetData[0]["id"], self.getJson(resP1)["id"])
+        self.assertEquals(resGetData[1]["id"], self.getJson(resP3)["id"])
 
 
     def test_post_portfolio_joinLeagueWithDifferentBuyPower(self):
