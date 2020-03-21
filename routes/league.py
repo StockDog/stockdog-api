@@ -51,7 +51,7 @@ def get_league(league_id):
         return make_response(jsonify(error='leagueNotFound', message=errors['leagueNotFound']), 404)
 
     # get associated portfolios
-    g.cursor.execute("SELECT * FROM Portfolio WHERE leagueId=%s", league_id)
+    g.cursor.execute("SELECT * FROM Portfolio WHERE leagueId=%s AND deleted=0", league_id)
     portfolios = g.cursor.fetchall()
 
     portfolio_funcs.attach_portfolioItems(portfolios)
