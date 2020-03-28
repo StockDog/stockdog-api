@@ -3,6 +3,7 @@ from flask import Blueprint, request, Response, g, jsonify, make_response
 import simplejson as json
 
 from routes import stock
+from routes import league
 from auth import auth
 from request_validator import validator
 from request_validator.schemas import portfolio_post_schema, portfolio_get_schema
@@ -23,19 +24,20 @@ def post_portfolio():
     buyPower = body.get('buyPower') or DEFAULT_BUYPOWER
 
     if 'inviteCode' in body:
-        g.cursor.execute("SELECT id, name, startPos FROM League WHERE inviteCode = %s", body['inviteCode'])
+        g.cursor.execute(
+            "SELECT id, name, startPos FROM League WHERE inviteCode = %s", body['inviteCode'])
         league = g.cursor.fetchone()
 
         if league is None:
             return make_response(jsonify(InviteCodeMismatch=errors['inviteCodeMismatch']), 400)
 
         # Make sure this user doesn't already have a portfolio in the league (even if it has been deleted)
-        g.cursor.execute("SELECT * FROM Portfolio WHERE userId=%s AND leagueId=%s", [g.user["id"], league["id"]])
+        g.cursor.execute(
+            "SELECT * FROM Portfolio WHERE userId=%s AND leagueId=%s", [g.user["id"], league["id"]])
         existing_portfolios = g.cursor.fetchall()
         if len(existing_portfolios) > 0:
             g.log.error(errors["duplicatePortfolio"])
             return make_response(jsonify(error=errors["duplicatePortfolio"]), 403)
-
 
         g.cursor.execute("INSERT INTO Portfolio(name, buyPower, userId, leagueId, deleted) VALUES (%s, %s, %s, %s, 0)",
                          [body['name'], league['startPos'], g.user['id'], league['id']])
@@ -63,7 +65,8 @@ def delete_portfolio(portfolio_id):
     if not auth.portfolio_belongsTo_user(portfolio_id):
         return Response(status=403)
 
-    g.cursor.execute("UPDATE Portfolio SET deleted=1 WHERE id=%s", [portfolio_id])
+    g.cursor.execute(
+        "UPDATE Portfolio SET deleted=1 WHERE id=%s", [portfolio_id])
 
     g.log.info("Deleted portfolio: " + portfolio_id)
     return Response(status=200)
@@ -106,18 +109,19 @@ def get_portfolio(portfolioId):
     attach_league(portfolio)
     attach_portfolio_history(portfolio)
 
-
     return json.dumps(portfolio)
 
 # Pass in array of portfolios
+
+
 def attach_portfolioItems(portfolios):
-    portfolioIds = "" # SQL array
+    portfolioIds = ""  # SQL array
     tickers = []
     items = []
 
     # Don't do anything if there is no portfolios
     if len(portfolios) == 0:
-        return;
+        return
 
     # Trying to get "1, 2, 3"
     for portfolio in portfolios:
@@ -129,7 +133,8 @@ def attach_portfolioItems(portfolios):
         # Also start portfolio[items] with an empty array
         portfolio['items'] = []
 
-    g.cursor.execute(f'SELECT id, shareCount, avgCost, ticker, portfolioId FROM PortfolioItem WHERE portfolioId IN ({portfolioIds})')
+    g.cursor.execute(
+        f'SELECT id, shareCount, avgCost, ticker, portfolioId FROM PortfolioItem WHERE portfolioId IN ({portfolioIds})')
     items = g.cursor.fetchall()
 
     for item in items:
@@ -156,7 +161,7 @@ def attach_portfolioItems(portfolios):
         for item in items:
             if item['portfolioId'] == portfolio['id']:
                 portfolio['items'].append(item)
-                
+
 
 def attach_portfolio_value(portfolio):
     value = float(portfolio['buyPower'])
@@ -167,7 +172,8 @@ def attach_portfolio_value(portfolio):
 
 
 def attach_league(portfolio):
-    g.cursor.execute("SELECT id, name, startPos, start, end FROM League WHERE id=%s", portfolio['leagueId'])
+    g.cursor.execute(
+        "SELECT id, name, startPos, start, end FROM League WHERE id=%s", portfolio['leagueId'])
     league_info = g.cursor.fetchone()
 
     # no league found
@@ -178,14 +184,20 @@ def attach_league(portfolio):
 
     del portfolio['leagueId']
 
+    # Status for the league
+    portfolio['league']['status'] = league.get_league_status(
+        league_info["start"], league_info["end"])
+
     # Stringify dates
-    portfolio['league']['start'] = portfolio['league']['start'].strftime('%m-%d-%Y')
-    portfolio['league']['end'] = portfolio['league']['end'].strftime('%m-%d-%Y')
+    portfolio['league']['start'] = portfolio['league']['start'].strftime(
+        '%m-%d-%Y')
+    portfolio['league']['end'] = portfolio['league']['end'].strftime(
+        '%m-%d-%Y')
 
 
 def attach_portfolio_history(portfolio):
     g.cursor.execute("SELECT id, portfolioId, datetime, value FROM PortfolioHistory WHERE portfolioId=%s",
-        (portfolio['id']))
+                     (portfolio['id']))
     portfolio_history = g.cursor.fetchall()
 
     # Stringify dates

@@ -26,7 +26,8 @@ class GetPortfolioTests(TestConfiguration):
         self.assertIsNotNone(league_data['inviteCode'])
         self.assertIsNotNone(league_data['startPos'])
 
-        portfolio_data = create_portfolio(self.base_url, self.headers, league_data['inviteCode'])
+        portfolio_data = create_portfolio(
+            self.base_url, self.headers, league_data['inviteCode'])
         self.assertTrue('id' in portfolio_data)
         self.assertTrue(portfolio_data['id'] > 0)
         self.assertTrue('buyPower' in portfolio_data)
@@ -38,13 +39,13 @@ class GetPortfolioTests(TestConfiguration):
 
         # Adding PortfolioHistory stuff manually
         self.cursor.execute('INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES(%s, DATE_SUB(CURDATE(), INTERVAL 2 DAY), %s)',
-            (portfolio_data['id'], 2950))
+                            (portfolio_data['id'], 2950))
 
         self.cursor.execute('INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES(%s, DATE_SUB(CURDATE(), INTERVAL 1 DAY), %s)',
-            (portfolio_data['id'], 3000))
+                            (portfolio_data['id'], 3000))
 
         self.cursor.execute('INSERT INTO PortfolioHistory(portfolioId, datetime, value) VALUES(%s, NOW(), %s)',
-            (portfolio_data['id'], 3010))
+                            (portfolio_data['id'], 3010))
 
     def test_getPortfolio_havingNoPortfolioItems(self):
         url = self.url + '/' + str(self.portfolioId)
@@ -65,6 +66,7 @@ class GetPortfolioTests(TestConfiguration):
         self.assertEquals(responseData['league']['id'], 1)
         self.assertEquals(responseData['league']['name'], 'test-league')
         self.assertEquals(responseData['league']['startPos'], 5000)
+        self.assertEquals(responseData['league']['status'], "planned")
         self.assertTrue('start' in responseData['league'])
         self.assertTrue('end' in responseData['league'])
 
@@ -76,7 +78,8 @@ class GetPortfolioTests(TestConfiguration):
             "portfolioId": self.portfolioId
         }
         transactionUrl = self.base_url + '/transactions'
-        buyResponse = requests.post(url=transactionUrl, data=json.dumps(buyBody), headers=self.headers)
+        buyResponse = requests.post(
+            url=transactionUrl, data=json.dumps(buyBody), headers=self.headers)
         buyResponseData = self.getJson(buyResponse)
 
         url = self.url + '/' + str(self.portfolioId)
@@ -97,7 +100,8 @@ class GetPortfolioTests(TestConfiguration):
         self.assertTrue('ticker' in responseData['items'][0])
         self.assertEquals(responseData['items'][0]['ticker'], 'AMD')
         self.assertTrue('companyName' in responseData['items'][0])
-        self.assertEquals(responseData['items'][0]['companyName'], 'Advanced Micro Devices, Inc.')
+        self.assertEquals(
+            responseData['items'][0]['companyName'], 'Advanced Micro Devices, Inc.')
         self.assertTrue('shareCount' in responseData['items'][0])
         self.assertEquals(responseData['items'][0]['shareCount'], 5)
         self.assertTrue('avgCost' in responseData['items'][0])
@@ -108,17 +112,21 @@ class GetPortfolioTests(TestConfiguration):
         self.assertEquals(responseData['league']['id'], 1)
         self.assertEquals(responseData['league']['name'], 'test-league')
         self.assertEquals(responseData['league']['startPos'], 5000)
+        self.assertEquals(responseData['league']['status'], "planned")
         self.assertTrue('start' in responseData['league'])
         self.assertTrue('end' in responseData['league'])
 
         # PortfolioHistory testing
         self.assertTrue('history' in responseData)
         self.assertEquals(len(responseData['history']), 4)
-        self.assertEquals(responseData['history'][1]['datetime'], datetime.date(datetime.now() - timedelta(2)).strftime('%m-%d-%Y'))
+        self.assertEquals(responseData['history'][1]['datetime'], datetime.date(
+            datetime.now() - timedelta(2)).strftime('%m-%d-%Y'))
         self.assertEquals(responseData['history'][1]['value'], 2950.00)
-        self.assertEquals(responseData['history'][2]['datetime'], datetime.date(datetime.now() - timedelta(1)).strftime('%m-%d-%Y'))
+        self.assertEquals(responseData['history'][2]['datetime'], datetime.date(
+            datetime.now() - timedelta(1)).strftime('%m-%d-%Y'))
         self.assertEquals(responseData['history'][2]['value'], 3000.00)
-        self.assertEquals(responseData['history'][3]['datetime'], datetime.date(datetime.now()).strftime('%m-%d-%Y'))
+        self.assertEquals(responseData['history'][3]['datetime'], datetime.date(
+            datetime.now()).strftime('%m-%d-%Y'))
         self.assertEquals(responseData['history'][3]['value'], 3010.00)
 
     def test_getPortfolio_notLoggedIn(self):
@@ -132,7 +140,8 @@ class GetPortfolioTests(TestConfiguration):
 
         self.assertEquals(response.status_code, 401)
         self.assertTrue('NotLoggedIn' in responseData)
-        self.assertEquals(responseData['NotLoggedIn'], "User must be logged in.")
+        self.assertEquals(
+            responseData['NotLoggedIn'], "User must be logged in.")
 
     def test_getPortfolio_nonExistent(self):
         url = self.url + '/' + str(self.portfolioId + 10)
@@ -151,7 +160,8 @@ class GetPortfolioTests(TestConfiguration):
             'email': 'daveeee.janzen18@gmail.com',
             'password': 'Stockd2g'
         }
-        registerResponse = requests.post(url=registerUrl, data=json.dumps(registerBody), headers=self.headers)
+        registerResponse = requests.post(
+            url=registerUrl, data=json.dumps(registerBody), headers=self.headers)
         registerResponseData = self.getJson(registerResponse)
         self.assertEqual(registerResponse.status_code, 200)
         self.assertTrue('id' in registerResponseData)
@@ -162,7 +172,8 @@ class GetPortfolioTests(TestConfiguration):
             'email': 'daveeee.janzen18@gmail.com',
             'password': 'Stockd2g'
         }
-        loginResponse = requests.post(url=loginUrl, data=json.dumps(loginBody), headers=self.headers)
+        loginResponse = requests.post(
+            url=loginUrl, data=json.dumps(loginBody), headers=self.headers)
         loginResponseData = self.getJson(loginResponse)
         self.assertEqual(loginResponse.status_code, 200)
         self.assertIsNotNone(loginResponseData['userId'])
@@ -177,4 +188,5 @@ class GetPortfolioTests(TestConfiguration):
         self.assertEqual(response.status_code, 403)
 
     def tearDown(self):
-        self.deleteTables(['Transaction', 'PortfolioItem', 'Portfolio', 'User', 'League', 'PortfolioHistory'])
+        self.deleteTables(['Transaction', 'PortfolioItem',
+                           'Portfolio', 'User', 'League', 'PortfolioHistory'])
