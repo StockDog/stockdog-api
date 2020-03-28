@@ -27,8 +27,6 @@ pyjwt = {extras = ["crypto"],version = "*"}
 gunicorn = "*"
 python-dotenv = "*"
 elasticsearch = "*"
-autopep8 = "*"
-pylint = "*"
 
 [requires]
 python_version = "3"
