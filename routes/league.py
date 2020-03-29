@@ -51,7 +51,8 @@ def get_league(league_id):
         return make_response(jsonify(error='leagueNotFound', message=errors['leagueNotFound']), 404)
 
     # get associated portfolios
-    g.cursor.execute("SELECT * FROM Portfolio WHERE leagueId=%s AND deleted=0", league_id)
+    g.cursor.execute(
+        "SELECT * FROM Portfolio WHERE leagueId=%s AND deleted=0", league_id)
     portfolios = g.cursor.fetchall()
 
     portfolio_funcs.attach_portfolioItems(portfolios)
@@ -74,7 +75,8 @@ def get_league(league_id):
 @league_api.route('/api/v1.0/leagues', methods=['GET'])
 @auth.login_required
 def get_leagues():
-    g.cursor.execute('SELECT id, name, startPos, start, end, inviteCode FROM League')
+    g.cursor.execute(
+        'SELECT id, name, startPos, start, end, inviteCode FROM League')
     leagues = g.cursor.fetchall()
 
     # Attach league status
@@ -88,7 +90,7 @@ def get_leagues():
 
 
 def get_league_status(start, end):
-    if start < datetime.now() < end:
+    if start <= datetime.now() <= end:
         return "active"
     elif end < datetime.now():
         return "ended"

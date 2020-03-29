@@ -17,25 +17,25 @@ from routesTests.GetWatchlistTests import GetWatchlistTests
 from routesTests.GetLeagueInviteCodesTests import GetLeagueInviteCodesTests
 
 if __name__ == '__main__':
-   loader = TestLoader()
-   suite = TestSuite(
-      (
-         loader.loadTestsFromTestCase(PostUserTests),
-         loader.loadTestsFromTestCase(PostSessionTests),
-         loader.loadTestsFromTestCase(DeleteSessionTests),
-         loader.loadTestsFromTestCase(GetChartsTests),
-         loader.loadTestsFromTestCase(PostDeletePortfolioTests),
-         loader.loadTestsFromTestCase(PostTransactionTests),
-         loader.loadTestsFromTestCase(GetPortfoliosTests),
-         loader.loadTestsFromTestCase(GetPortfolioTests),
-         loader.loadTestsFromTestCase(PostLeagueTests),
-         loader.loadTestsFromTestCase(StockTests),
-         loader.loadTestsFromTestCase(GetLeagueTests),
-         loader.loadTestsFromTestCase(PostWatchlistTests),
-         loader.loadTestsFromTestCase(GetWatchlistTests),
-         loader.loadTestsFromTestCase(GetLeagueInviteCodesTests)
-      )
-   )
-   runner = TextTestRunner()
-   result = runner.run(suite)
-   sys.exit(not result.wasSuccessful())
+    loader = TestLoader()
+    suite = TestSuite(
+        (
+            loader.loadTestsFromTestCase(PostUserTests),
+            loader.loadTestsFromTestCase(PostSessionTests),
+            loader.loadTestsFromTestCase(DeleteSessionTests),
+            loader.loadTestsFromTestCase(GetChartsTests),
+            loader.loadTestsFromTestCase(PostDeletePortfolioTests),
+            loader.loadTestsFromTestCase(PostTransactionTests),
+            loader.loadTestsFromTestCase(GetPortfoliosTests),
+            loader.loadTestsFromTestCase(GetPortfolioTests),
+            loader.loadTestsFromTestCase(PostLeagueTests),
+            loader.loadTestsFromTestCase(StockTests),
+            loader.loadTestsFromTestCase(GetLeagueTests),
+            loader.loadTestsFromTestCase(PostWatchlistTests),
+            loader.loadTestsFromTestCase(GetWatchlistTests),
+            loader.loadTestsFromTestCase(GetLeagueInviteCodesTests)
+        )
+    )
+    runner = TextTestRunner()
+    result = runner.run(suite)
+    sys.exit(not result.wasSuccessful())
