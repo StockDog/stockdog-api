@@ -19,7 +19,5 @@ fi
 cd "$REPOSITORY_ROOT_DIR"
 
 # Remove package-locks and node modules
-echo "Removing all package-locks"
-find . -name "package-lock.json" -exec rm -rf '{}' +
-echo "Removing all node_modules"
-find . -name "node_modules" -exec rm -rf '{}' +
+echo "Removing Pipfile.lock"
+find . -name "Pipfile.lock" -exec rm -rf '{}' +
