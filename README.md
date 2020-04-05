@@ -12,7 +12,7 @@ It can be found [here](https://stockdog.gitbook.io/project/rest-api).
 
 
 ### Running locally
-Prerequisites: Python 3.6+, mysql
+Prerequisites: Python 3.6+, mysql, pip3, pipenv (Use brew install to install any prerequisites)
 1. Set up mysql on your local machine and create a new user.
 - If you want testing to work out of the box, you must set up the following:
     - user: sduser
@@ -20,8 +20,7 @@ Prerequisites: Python 3.6+, mysql
     - host: localhost
     - database: StockDog
 1. Create a `.env` file in /stockdog-api and follow the format laid out in `.env.example`. The database name should be `StockDog`.
-1. Run `brew install pipenv` if you do not have pipenv.
-1. From /stockdog-api, run `cd Scripts` and then run `./bootstrap.sh`
+1. From /stockdog-api, run `cd Scripts` and then run `./bootstrap.sh` (this will setup service dependencies and database)
 1. Run `pipenv run python3 app.py`.
 1. Test that everything is working by running `curl localhost:5005`.
 
