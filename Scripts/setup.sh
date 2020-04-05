@@ -48,6 +48,7 @@ echo -e "${CYAN}Checking for prerequisites${RESTORE}"
 check_installed mysql
 check_installed python3
 check_installed pip3
+check_installed pipenv
 echo -e "${GREEN}All prerequisites detected!${RESTORE}"
 echo ""
 
