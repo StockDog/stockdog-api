@@ -17,7 +17,7 @@ echo " ____) | || (_) | (__|   <| |__| | (_) | (_| |"
 echo "|_____/ \__\___/ \___|_|\_\_____/ \___/ \__, |"
 echo "                                         __/ |"
 echo "                                        |___/" 
-echo "Bootstrapper for local development environment"
+echo "Bootstrapper for local server development environment"
 
 # Move to the root directory
 START_DIR="$(pwd)"
@@ -45,48 +45,19 @@ check_installed() {
 
 # Check for prerequisites
 echo -e "${CYAN}Checking for prerequisites${RESTORE}"
-check_installed npm
 check_installed mysql
 check_installed python3
 check_installed pip3
+check_installed pipenv
 echo -e "${GREEN}All prerequisites detected!${RESTORE}"
 echo ""
 
 ###############################################################################
-
-echo -e "${CYAN}Setting up modules${RESTORE}"
-
-###############################################################################
-# Set up the web module
-WEB_MODULE_DIR="${REPOSITORY_ROOT_DIR}/Web/stockdogweb"
-echo -e "${BLUE}Setting up web (${WEB_MODULE_DIR})${RESTORE}"
-cd "$WEB_MODULE_DIR"
-echo "Installing npm dependencies"
-if ! npm install 1>>"$LOG_FILE" 2>&1; then
-   echo -e "${RED}Failed to install npm dependencies for web module${RESTORE}"; exit 1
-fi
-echo -e "${GREEN}Successfully set up web module${RESTORE}\n"
-cd ../..
-
-###############################################################################
-# Set up the mobile module
-MOBILE_MODULE_DIR="${REPOSITORY_ROOT_DIR}/Mobile/stockdogmobile"
-echo -e "${BLUE}Setting up mobile (${MOBILE_MODULE_DIR})${RESTORE}"
-cd "$MOBILE_MODULE_DIR"
-echo "Installing npm dependencies"
-if ! npm install 1>>"$LOG_FILE" 2>&1; then
-   echo -e "${RED}Failed to install npm dependencies for mobile module${RESTORE}"; exit 1
-fi
-echo -e "${GREEN}Succesffully set up mobile module${RESTORE}\n"
-cd ../..
-
-###############################################################################
 # Setup the service module
-SERVICE_MODULE_DIR="${REPOSITORY_ROOT_DIR}/Service"
 echo -e "${BLUE}Setting up the service (${REPOSITORY_ROOT_DIR})${RESTORE}"
 cd "$REPOSITORY_ROOT_DIR"
 echo "Installing python3 dependencies"
-if ! pip3 install -r requirements.txt --user 1>>"$LOG_FILE" 2>&1; then
+if ! pipenv install && pipenv shell 1>>"$LOG_FILE" 2>&1; then
    echo -e "${RED}Failed to install python3 dependencies for service module${RESTORE}"; exit 1
 fi
 echo -e "${GREEN}Successfully setup service module${RESTORE}\n"
@@ -94,8 +65,8 @@ echo -e "${GREEN}Successfully setup service module${RESTORE}\n"
 ###############################################################################
 # Setup the StockDog database
 echo "Creating the StockDog database"
-cd "$SERVICE_MODULE_DIR"
-init_sql="${SERVICE_MODULE_DIR}/db/init.sql"
+cd "$REPOSITORY_ROOT_DIR"
+init_sql="${REPOSITORY_ROOT_DIR}/db/init.sql"
 if ! mysql < $init_sql 1>>"$LOG_FILE" 2>&1; then
    echo -e "${RED}Failed to bootstrap the StockDog database"
    echo -e "Make sure MySQL server is running and ~/.my.cnf is set up correctly.${RESTORE}"
