@@ -4,6 +4,7 @@ from unittest import TestLoader, TestSuite, TextTestRunner
 from authTests.PostUserTests import PostUserTests
 from authTests.PostSessionTests import PostSessionTests
 from authTests.DeleteSessionTests import DeleteSessionTests
+from routesTests.GetInfoTests import GetInfoTests
 from routesTests.GetChartsTests import GetChartsTests
 from routesTests.PostDeletePortfolioTests import PostDeletePortfolioTests
 from routesTests.PostTransactionTests import PostTransactionTests
@@ -23,6 +24,7 @@ if __name__ == '__main__':
             loader.loadTestsFromTestCase(PostUserTests),
             loader.loadTestsFromTestCase(PostSessionTests),
             loader.loadTestsFromTestCase(DeleteSessionTests),
+            loader.loadTestsFromTestCase(GetInfoTests),
             loader.loadTestsFromTestCase(GetChartsTests),
             loader.loadTestsFromTestCase(PostDeletePortfolioTests),
             loader.loadTestsFromTestCase(PostTransactionTests),
