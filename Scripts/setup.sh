@@ -67,9 +67,9 @@ echo -e "${GREEN}Successfully setup service module${RESTORE}\n"
 echo "Creating the StockDog database"
 cd "$REPOSITORY_ROOT_DIR"
 init_sql="${REPOSITORY_ROOT_DIR}/db/init.sql"
-if ! mysql < $init_sql 1>>"$LOG_FILE" 2>&1; then
+if ! mysql -usduser -psdpass < $init_sql 1>>"$LOG_FILE" 2>&1; then
    echo -e "${RED}Failed to bootstrap the StockDog database"
-   echo -e "Make sure MySQL server is running and ~/.my.cnf is set up correctly.${RESTORE}"
+   echo -e "Make sure MySQL server is running and the sduser user is created. Alternatively, manually import /db/init.sql.${RESTORE}"
    exit 1
 fi
 
