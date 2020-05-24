@@ -7,12 +7,15 @@ from TestConfiguration import TestConfiguration
 class PostUserTests(TestConfiguration):
 
    def setUp(self):
-      self.headers = {'content-type' : 'application/json'}
+      self.headers = {
+            'Content-Type': 'application/json',
+            'App-Version': '*'
+        }
       self.url = self.base_url + '/users'
 
 
    def test_register_user_missingContentTypeHeader(self):
-      self.headers.pop('content-type')
+      self.headers.pop('Content-Type')
       body = {
          'firstName' : 'Dave',
          'lastName' : 'Janzen',
@@ -29,7 +32,7 @@ class PostUserTests(TestConfiguration):
 
 
    def test_register_user_invalidContentTypeHeader(self):
-      self.headers['content-type'] = 'plain/text'
+      self.headers['Content-Type'] = 'plain/text'
       body = {
          'firstName' : 'Dave',
          'lastName' : 'Janzen',
@@ -42,7 +45,7 @@ class PostUserTests(TestConfiguration):
       
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidHeader' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of application/json")
+      self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of ['application/json']")
 
 
    def test_register_user(self):

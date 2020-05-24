@@ -24,7 +24,7 @@ class TestConfiguration(TestCase):
          self.log.error(e)
          raise e
 
-      self.headers = {'content-type' : 'application/json'}
+      self.headers = {'Content-Type' : 'application/json'}
       self.base_url = TRAVIS_URL
 
    

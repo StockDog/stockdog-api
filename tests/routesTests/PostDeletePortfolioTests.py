@@ -9,7 +9,10 @@ from tests.test_helper_functions import create_league, login_david_janzen, regis
 
 class PostDeletePortfolioTests(TestConfiguration):
     def setUp(self):
-        self.headers = {'content-type': 'application/json'}
+        self.headers = {
+            'Content-Type': 'application/json',
+            'App-Version': '*'
+        }
 
         register_data = register_david_janzen(self.base_url, self.headers)
         self.assertTrue('id' in register_data)
@@ -139,7 +142,7 @@ class PostDeletePortfolioTests(TestConfiguration):
                           "The invite code provided does not match any existing league")
 
     def test_post_portfolio_missingContentTypeHeader(self):
-        self.headers.pop('content-type')
+        self.headers.pop('Content-Type')
         body = {
             'name': 'mynewportfolio',
         }
@@ -152,7 +155,7 @@ class PostDeletePortfolioTests(TestConfiguration):
         self.assertEquals(responseData[0]['MissingHeader'], "Content-Type is a required header")
 
     def test_post_portfolio_invalidContentTypeHeader(self):
-        self.headers['content-type'] = 'plain/text'
+        self.headers['Content-Type'] = 'plain/text'
         body = {
             'name': 'mynewportfolio',
         }
@@ -162,7 +165,7 @@ class PostDeletePortfolioTests(TestConfiguration):
 
         self.assertEquals(response.status_code, 400)
         self.assertTrue('InvalidHeader' in responseData[0])
-        self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of application/json")
+        self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of ['application/json']")
 
     def test_post_portfolio_soloDefaultBuyPower(self):
         body = {

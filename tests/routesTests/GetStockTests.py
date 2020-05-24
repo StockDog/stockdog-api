@@ -9,7 +9,10 @@ from tests.test_helper_functions import register_david_janzen, login_david_janze
 
 class StockTests(TestConfiguration):
     def setUp(self):
-        self.headers = {'content-type': 'application/json'}
+        self.headers = {
+            'Content-Type': 'application/json',
+            'App-Version': '*'
+        }
 
         register_data = register_david_janzen(self.base_url, self.headers)
         self.assertTrue('id' in register_data)

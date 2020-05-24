@@ -9,7 +9,10 @@ from tests.test_helper_functions import register_david_janzen, login_david_janze
 
 class PostTransactionTests(TestConfiguration):
    def setUp(self):
-      self.headers = {'content-type': 'application/json'}
+      self.headers = {
+            'Content-Type': 'application/json',
+            'App-Version': '*'
+        }
 
       register_data = register_david_janzen(self.base_url, self.headers)
       self.assertTrue('id' in register_data)
@@ -39,7 +42,7 @@ class PostTransactionTests(TestConfiguration):
 
 
    def test_post_transaction_missingContentTypeHeader(self):
-      self.headers.pop('content-type')
+      self.headers.pop('Content-Type')
       body = {
          "shareCount" : 5,
          "ticker" : "AMD",
@@ -56,7 +59,7 @@ class PostTransactionTests(TestConfiguration):
 
 
    def test_post_transaction_invalidContentTypeHeader(self):
-      self.headers['content-type'] = 'plain/text'
+      self.headers['Content-Type'] = 'plain/text'
       body = {
          "shareCount" : 5,
          "ticker" : "AMD",
@@ -69,7 +72,7 @@ class PostTransactionTests(TestConfiguration):
       
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidHeader' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of application/json")
+      self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of ['application/json']")
 
 
    def test_post_transaction_buy(self):

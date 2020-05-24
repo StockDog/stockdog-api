@@ -9,7 +9,10 @@ from tests.test_helper_functions import create_portfolio, create_league, login_d
 
 class PostLeagueTests(TestConfiguration):
     def setUp(self):
-        self.headers = {'content-type': 'application/json'}
+        self.headers = {
+            'Content-Type': 'application/json',
+            'App-Version': '*'
+        }
 
         register_data = register_david_janzen(self.base_url, self.headers)
         self.assertTrue('id' in register_data)
@@ -35,7 +38,7 @@ class PostLeagueTests(TestConfiguration):
         self.userId = login_data['userId']
 
     def test_post_league_missingContentTypeHeade(self):
-        self.headers.pop('content-type')
+        self.headers.pop('Content-Type')
         body = {
             "name": "myLeague",
             "start": "08-24-2029",
@@ -50,7 +53,7 @@ class PostLeagueTests(TestConfiguration):
         self.assertEquals(responseData[0]['MissingHeader'], "Content-Type is a required header")
 
     def test_post_league_invalidContentTypeHeade(self):
-        self.headers['content-type'] = 'plain/text'
+        self.headers['Content-Type'] = 'plain/text'
         body = {
             "name": "myLeague",
             "start": "08-24-2029",
@@ -62,7 +65,7 @@ class PostLeagueTests(TestConfiguration):
 
         self.assertEquals(response.status_code, 400)
         self.assertTrue('InvalidHeader' in responseData[0])
-        self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of application/json")
+        self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of ['application/json']")
 
     def test_post_league_notLoggedIn(self):
         logoutUrl = self.base_url + '/users/' + str(self.userId) + '/session'
