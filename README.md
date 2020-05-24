@@ -14,9 +14,9 @@ It can be found [here](https://stockdog.gitbook.io/project/rest-api).
 ### Running locally
 Prerequisites: Python 3.6+, mysql, pip3, pipenv, elasticsearch, kibana (Use brew install to install any prerequisites)
 1. Set up mysql on your local machine and create a new user with the following commands:
-  1. `CREATE USER 'sduser'@'localhost' IDENTIFIED BY 'sdpass';`
-  1. `GRANT ALL PRIVILEGES ON * . * TO 'sduser'@'localhost';` 
-  1. `FLUSH PRIVILEGES;`
+    1. `CREATE USER 'sduser'@'localhost' IDENTIFIED BY 'sdpass';`
+    1. `GRANT ALL PRIVILEGES ON * . * TO 'sduser'@'localhost';` 
+    1. `FLUSH PRIVILEGES;`
 1. Set up [elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/7.7/brew.html):
   - Once set up, go through the instructions for [StockAgg](https://github.com/asnewman/StockAgg) to populate the index used to gather stock information (name, sector, symbol, etc...).
   - You may want to set up [Kibana](https://www.elastic.co/guide/en/kibana/current/brew.html) to make sure all the data is there.
