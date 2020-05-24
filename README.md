@@ -18,14 +18,14 @@ Prerequisites: Python 3.6+, mysql, pip3, pipenv, elasticsearch, kibana (Use brew
     1. `GRANT ALL PRIVILEGES ON * . * TO 'sduser'@'localhost';` 
     1. `FLUSH PRIVILEGES;`
 1. Set up [elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/7.7/brew.html):
-  - Once set up, go through the instructions for [StockAgg](https://github.com/asnewman/StockAgg) to populate the index used to gather stock information (name, sector, symbol, etc...).
-  - You may want to set up [Kibana](https://www.elastic.co/guide/en/kibana/current/brew.html) to make sure all the data is there.
+    1. Once set up, go through the instructions for [StockAgg](https://github.com/asnewman/StockAgg) to populate the index used to gather stock information (name, sector, symbol, etc...).
+    1. You may want to set up [Kibana](https://www.elastic.co/guide/en/kibana/current/brew.html) to make sure all the data is there.
 1. Create a `.env` file in /stockdog-api and follow the format laid out in `.env.example`. For local setup, the following should be used:
-  - `db.database="StockDog"`
-  - `db.host="localhost"`
-  - `db.user="sduser"`
-  - `db.password="sdpass"`
-  - `elasticsearch.host="localhost:9200"`
+    1. `db.database="StockDog"`
+    1. `db.host="localhost"`
+    1. `db.user="sduser"`
+    1. `db.password="sdpass"`
+    1. `elasticsearch.host="localhost:9200"`
 1. From /stockdog-api, run `cd Scripts` and then run `./bootstrap.sh` (this will setup service dependencies and database)
 1. Run `pipenv run python3 app.py`.
 1. Test that everything is working by running `curl localhost:5005`.
