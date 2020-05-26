@@ -8,7 +8,10 @@ from TestConfiguration import TestConfiguration
 class PostSessionTests(TestConfiguration):
 
    def setUp(self):
-      self.headers = {'content-type' : 'application/json'}
+      self.headers = {
+         'Content-Type' : 'application/json',
+         'App-Version': '*'
+      }
       self.url = self.base_url + '/users/session'
       
       url = self.base_url + '/users'
@@ -27,7 +30,7 @@ class PostSessionTests(TestConfiguration):
 
 
    def test_login_user_missingContentTypeHeader(self):
-      self.headers.pop('content-type')
+      self.headers.pop('Content-Type')
       body = {
          'email' : 'dave.janzen18@gmail.com',
          'password' : 'Stockd2g'
@@ -41,7 +44,7 @@ class PostSessionTests(TestConfiguration):
 
 
    def test_login_user_invalidContentTypeHeader(self):
-      self.headers['content-type'] = 'plain/text'
+      self.headers['Content-Type'] = 'plain/text'
       body = {
          'email' : 'dave.janzen18@gmail.com',
          'password' : 'Stockd2g'
@@ -51,7 +54,7 @@ class PostSessionTests(TestConfiguration):
 
       self.assertEquals(response.status_code, 400)
       self.assertTrue('InvalidHeader' in responseData[0])
-      self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of application/json")
+      self.assertEquals(responseData[0]['InvalidHeader'], "API only accepts Content-Type of ['application/json']")
 
 
    def test_login_user(self):

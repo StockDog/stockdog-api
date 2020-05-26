@@ -7,7 +7,10 @@ from TestConfiguration import TestConfiguration
 class DeleteSessionTests(TestConfiguration):
 
    def setUp(self):      
-      self.headers = {'content-type' : 'application/json'}
+      self.headers = {
+         'Content-Type' : 'application/json',
+         'App-Version': '*'
+      }
 
       registerUrl = self.base_url + '/users'
       registerBody = {

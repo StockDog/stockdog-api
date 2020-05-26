@@ -5,6 +5,8 @@ import simplejson as json
 from .validation_error import ValidationError
 from util.error_map import errors
 
+VALID_APP_VERSIONS = ["*", "1.0.6"]
+
 def validate(data, fields):
    errors = []
    check_headers(errors)
@@ -23,14 +25,55 @@ def validate(data, fields):
 
 
 def check_headers(errors):
+    """ Checks to see if there are any errors in the headers
 
-   contentTypeHeader = request.headers.get('Content-Type')
-   if request.method != 'GET' and contentTypeHeader is None:
-      errors.append({'MissingHeader' : 'Content-Type is a required header'})
-   elif request.method != 'GET' and contentTypeHeader and contentTypeHeader != 'application/json':
-      errors.append({'InvalidHeader' : 'API only accepts Content-Type of application/json'})
-   
-   return errors
+        Parameters
+        __________
+        errors: array<map>
+            Errors array to append to
+
+        Returns
+        _______
+        array<map>
+            New set of errors
+    """
+    content_type_header = request.headers.get('Content-Type')
+    app_version_header = request.headers.get('App-Version')
+
+    if request.method != 'GET':
+        content_type_header_error = header_validator('Content-Type', ["application/json"])
+        if content_type_header_error != None:
+            errors.append(content_type_header_error)
+
+    app_version_header_error = header_validator('App-Version', VALID_APP_VERSIONS)
+
+    if app_version_header_error != None:
+        errors.append(app_version_header_error)
+    return errors
+
+
+def header_validator(header_name, values):
+    """ Makes sure that the header exists and is one of the values
+
+        Parameters
+        __________
+        header_name: str
+            The name of the header
+        values: array<str>
+            The possible values for the header
+
+        Returns
+        _______
+        map
+            A map of an error
+    """
+
+    header_value = request.headers.get(header_name)
+
+    if header_value is None:
+        return {'MissingHeader' : f'{header_name} is a required header'}
+    elif header_value not in values:
+        return {'InvalidHeader' : f'API only accepts {header_name} of {values}'}
 
 
 def check_required_fields(data, fields, errors):
@@ -88,10 +131,7 @@ def validate_headers(f):
    def decorator(*args, **kwargs):
       try:
          errors = []
-         # This function check if content-type is application/json no matter what the request it
-         # This does not make sense because get calls with no body do not have content
-         # axios calls in the front end do not like this code law
-         # check_headers(errors)
+         check_headers(errors)
          if (len(errors) > 0):
             raise ValidationError(errors)
       
